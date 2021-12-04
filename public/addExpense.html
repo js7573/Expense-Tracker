@@ -368,28 +368,11 @@
 
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+                        <h1 class="h3 mb-0 text-gray-800">Add expense</h1>
                     </div>
 
-                    <!-- Content Row -->
                     <div class="row">
-
-                        <div class="total-amount-spent">
-                            <h1>0.00€</h1>
-                        </div>
-                    
-                    </div>
-
-                   <hr/> 
-
-                   <div class="row">
                         <div class="dashboard-buttons">
-                            <a href="addExpense.html" class="btn btn-primary btn-icon-split">
-                                <span class="icon text-white-50">
-                                    <i class="fas fa-flag"></i>
-                                </span>
-                                <span class="text">Add expense</span>
-                            </a>
     
                             <a href="manageCategories.html" class="btn btn-primary btn-icon-split">
                                 <span class="icon text-white-50">
@@ -400,134 +383,72 @@
                         </div>
                    </div>
 
-                    <!-- Content Row -->
-                    <div class="row">
-                        <!-- DataTables Example -->
-                    <div class="card-shadow-mb-4">
-                        <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Latest Transactions</h6>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                                    <thead>
-                                        <tr>
-                                            <th>Category</th>
-                                            <th>Description</th>
-                                            <th>Amount spent</th>
-                                            <th>Date</th>
-                                        </tr>
-                                    </thead>
-                                    <tfoot>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Position</th>
-                                            <th>Office</th>
-                                            <th>Age</th>
-                                        </tr>
-                                    </tfoot>
-                                    <tbody>
-                                        <tr>
-                                            <td>Tiger Nixon</td>
-                                            <td>System Architect</td>
-                                            <td>Edinburgh</td>
-                                            <td>61</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Garrett Winters</td>
-                                            <td>Accountant</td>
-                                            <td>Tokyo</td>
-                                            <td>63</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Ashton Cox</td>
-                                            <td>Junior Technical Author</td>
-                                            <td>San Francisco</td>
-                                            <td>66</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                    </div>
+                    <div class="row justify-content-center">
 
-                    <!-- Content Row -->
-
-                    <div class="row">
-
-                        <!-- Area Chart -->
-                        <div class="col-xl-8 col-lg-7">
-                            <div class="card shadow mb-4">
-                                <!-- Card Header - Dropdown -->
-                                <div
-                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                    <h6 class="m-0 font-weight-bold text-primary">Earnings Overview</h6>
-                                    <div class="dropdown no-arrow">
-                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                                        </a>
-                                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                            aria-labelledby="dropdownMenuLink">
-                                            <div class="dropdown-header">Dropdown Header:</div>
-                                            <a class="dropdown-item" href="#">Action</a>
-                                            <a class="dropdown-item" href="#">Another action</a>
-                                            <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item" href="#">Something else here</a>
+                        <div class="col-xl-5 col-lg-6 col-md-9">
+            
+                            <div class="card o-hidden border-0 shadow-lg my-5">
+                                <div class="card-body p-0">
+                                    <!-- Nested Row within Card Body -->
+                                    
+                                        <div class="col">
+                                            <div class="p-5">
+                            
+                                                <form class="user">
+                                                    <div class="form-group">
+                                                        <div class="row" style="justify-content: center">
+                                                            <div class="mr-4">
+                                                                <input type="radio" name="transaction" class="form-control form-control-user"
+                                                                id="expense" aria-describedby="expense">
+                                                                <label for="expense">Expense</label>
+                                                            </div>
+                                                            
+                                                            <div>
+                                                                <input type="radio" name="transaction" class="form-control form-control-user"
+                                                                id="profit" aria-describedby="profit">
+                                                                <label for="profit">Profit</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <input type="text" class="form-control form-control-user"
+                                                            id="expenseName" aria-describedby="expenseName"
+                                                            placeholder="Name">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <input type="number" class="form-control form-control-user"
+                                                            id="expenseAmount" aria-describedby="expenseAmount"
+                                                            placeholder="Expense" >
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <input type="date" class="form-control form-control-user"
+                                                            id="expenesDate" aria-describedby="expenseDate">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <select class="form-control form-control-user" name="categories" id="categories" aria-describedby="categories" style="padding: 0 1rem; ">
+                                                            <option value="" disabled selected>Select category</option>
+                                                            <option value="traffic">Traffic</option>
+                                                            <option value="shopping">Shopping</option>
+                                                            <option value="vacation">Vacation</option>
+                                                            <option value="subscriptions">Subscriptions</option>
+                                                            <option value="other">Other</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <textarea class="form-control form-control-user" id="description" aria-describedby="description" placeholder="Description"></textarea>
+                                                    </div>
+                                                    <a onclick="" class="btn btn-primary btn-user btn-block">
+                                                        Add
+                                                    </a>
+                                                </form>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                                <!-- Card Body -->
-                                <div class="card-body">
-                                    <div class="chart-area">
-                                        <canvas id="myAreaChart"></canvas>
-                                    </div>
+                                    
                                 </div>
                             </div>
+            
                         </div>
-
-                        <!-- Pie Chart -->
-                        <div class="col-xl-4 col-lg-5">
-                            <div class="card shadow mb-4">
-                                <!-- Card Header - Dropdown -->
-                                <div
-                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                    <h6 class="m-0 font-weight-bold text-primary">Expenses by categories</h6>
-                                    <div class="dropdown no-arrow">
-                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                                        </a>
-                                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                            aria-labelledby="dropdownMenuLink">
-                                            <div class="dropdown-header">Dropdown Header:</div>
-                                            <a class="dropdown-item" href="#">Action</a>
-                                            <a class="dropdown-item" href="#">Another action</a>
-                                            <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item" href="#">Something else here</a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- Card Body -->
-                                <div class="card-body">
-                                    <div class="chart-pie pt-4 pb-2">
-                                        <canvas id="myPieChart"></canvas>
-                                    </div>
-                                    <div class="mt-4 text-center small">
-                                        <span class="mr-2">
-                                            <i class="fas fa-circle text-primary"></i> Category 1
-                                        </span>
-                                        <span class="mr-2">
-                                            <i class="fas fa-circle text-success"></i> Category 2
-                                        </span>
-                                        <span class="mr-2">
-                                            <i class="fas fa-circle text-info"></i> Category 3
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+            
                     </div>
                 </div>
                 <!-- /.container-fluid -->
@@ -589,10 +510,7 @@
     <!-- Page level plugins -->
     <script src="vendor/chart.js/Chart.min.js"></script>
 
-    <!-- Page level custom scripts -->
-    <script src="js/demo/chart-area-demo.js"></script>
-    <script src="js/demo/chart-pie-demo.js"></script>
-
+    
 </body>
 
 </html>
