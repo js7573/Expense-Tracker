@@ -1,6 +1,7 @@
 let app;
 let db;
 let auth;
+let signedInUser = null;
 
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -9,7 +10,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
     // // The Firebase SDK is initialized and available here!
     //
-    // firebase.auth().onAuthStateChanged(user => { });
+    firebase.auth().onAuthStateChanged(user => { 
+      if (user) {
+        console.log("Signed in");
+        signedInUser = user;
+      } else {
+        console.log("Not signed in");
+        signedInUser = null;
+      }
+      checkIfSignedIn();
+    });
     // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
     // firebase.firestore().doc('/foo/bar').get().then(() => { });
     // firebase.functions().httpsCallable('yourFunction')().then(() => { });
@@ -73,7 +83,22 @@ async function signIn(){
   let password = document.getElementById("exampleInputPassword").value;
   auth.signInWithEmailAndPassword(email, password).then(credentials => {
   // Signed in 
-  const user = credentials.user;
-  window.location.replace("/dashboard.html");
+  user = credentials.user;
+  window.location.replace("/dashboard-new.html");
   });
+}
+
+async function signOut(){
+  auth.signOut();
+  window.location.replace("/index.html");
+}
+
+async function checkIfSignedIn(){
+  if(signedInUser)
+    console.log("USER FOUND");
+  else{
+    let currentFile = window.location.href.split("/").slice(-1)[0];
+    if(currentFile !== "index.html" && currentFile !== "register.html" && currentFile !== "404.html")
+      window.location.replace("/index.html");
+  }
 }
