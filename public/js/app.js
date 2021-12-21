@@ -33,16 +33,6 @@ document.addEventListener('DOMContentLoaded', function() {
       app = firebase.app();
       db = firebase.firestore();
       auth = firebase.auth();
-
-      /*
-        myUser.get().then(doc => {
-        const data = doc.data();
-        console.log(data.Username);
-        console.log(data.Password);
-        });
-
-        let myUser = db.collection('Users').doc('User1');
-      */
     } 
     
     catch (e) {
@@ -114,6 +104,10 @@ async function checkIfSignedIn(){
           break;
         case "addExpense.html":
           addExpenseCode();
+          break;
+        case "tables-new.html":
+          expensesOverviewCode();
+          break;
       }
     }); 
   }
@@ -125,11 +119,53 @@ async function checkIfSignedIn(){
 }
 
 async function dashboardCode(balance){
+  // Show current balance
   document.getElementsByClassName("total-amount-spent")[0].innerHTML = "<h1>" + balance + " €</h1>";
+
+  // Populate expenses table (show last 3 expenses by date)
+  const expensesRef = db.collection('Expenses');
+  let expenses = await expensesRef.where('UserID', '==', signedInUser.email).orderBy('Date', 'desc').limit(3).get();
+
+  $(document).ready(function() {
+      let table = $('#dataTable').DataTable({searching: false, paging: false, info: false});
+      
+      expenses.forEach(expense => {
+        expenseData = expense.data();
+
+        table.row.add([
+          expenseData.Name,
+          expenseData.Amount,
+          expenseData.Date,
+          expenseData.CategoryID,
+          expenseData.Description
+        ]).draw(false);
+      });
+  });
 }
 
 async function addExpenseCode(){
+  listCategories();
+}
 
+async function expensesOverviewCode(){
+  const expensesRef = db.collection('Expenses');
+  let expenses = await expensesRef.where('UserID', '==', signedInUser.email).orderBy('Date', 'desc').get();
+
+  $(document).ready(function() {
+      let table = $('#dataTable').DataTable();
+      
+      expenses.forEach(expense => {
+        expenseData = expense.data();
+
+        table.row.add([
+          expenseData.Name,
+          expenseData.Amount,
+          expenseData.Date,
+          expenseData.CategoryID,
+          expenseData.Description
+        ]).draw(false);
+      });
+  });
 }
 
 async function addExpense(){
@@ -138,7 +174,6 @@ async function addExpense(){
   let expenseDate = document.getElementById("expenseDate").value;
   let expenseCategory = document.getElementById("expenseCategories").value;
   let expenseDescription = document.getElementById("expenseDescription").value;
-  let expenseID = 2;
   const expenseData = {
     Name: expenseName,
     Amount: expenseAmount,
@@ -146,8 +181,54 @@ async function addExpense(){
     CategoryID: expenseCategory,
     Description: expenseDescription,
     UserID: signedInUser.email,
-    ExpenseID: 2,
   };
 
-  const res = await db.collection('Expenses').doc(expenseName).set(expenseData);
+  document.getElementById("expenseName").value = "";
+  document.getElementById("expenseAmount").value = "";
+  document.getElementById("expenseDate").value = "";
+  document.getElementById("expenseCategories").value = "";
+  document.getElementById("expenseDescription").value = "";
+
+  const res = await db.collection('Expenses').doc().set(expenseData);
+}
+
+async function addCategory(){
+  let categoryColor = document.getElementById("categoryColor").value;
+  let categoryName = document.getElementById("categoryName").value;
+  let categoryDescription = document.getElementById("categoryDescription").value;
+  let categoryBudget = document.getElementById("categoryBudget").value;
+
+  const categoryData = {
+    Name: categoryName,
+    Color: categoryColor,
+    Budget: categoryBudget,
+    Description: categoryDescription,
+    UserID: signedInUser.email,
+  };
+
+  document.getElementById("categoryColor").value = "";
+  document.getElementById("categoryName").value = "";
+  document.getElementById("categoryDescription").value = "";
+  document.getElementById("categoryBudget").value = "";
+
+  const res = await db.collection('Categories').doc(categoryName).set(categoryData);
+}
+
+async function listCategories(){
+  let select = document.getElementById("expenseCategories");
+  let options = [];
+
+  const categoriesRef = db.collection('Categories');
+  const categories = await categoriesRef.get();
+  categories.forEach(category => {
+    options.push(category.id);
+  });
+
+  for(var i = 0; i < options.length; i++) {
+    var opt = options[i];
+    var el = document.createElement("option");
+    el.textContent = opt;
+    el.value = opt;
+    select.appendChild(el);
+  }
 }

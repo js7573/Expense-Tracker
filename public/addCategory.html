@@ -142,19 +142,6 @@
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="userDropdown">
-                                <a class="dropdown-item" href="#">
-                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Profile
-                                </a>
-                                <a class="dropdown-item" href="#">
-                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Settings
-                                </a>
-                                <a class="dropdown-item" href="#">
-                                    <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Activity Log
-                                </a>
-                                <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
                                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Logout
@@ -190,19 +177,22 @@
                                                     <div class="row" style="align-items: center; justify-content: space-around">
                                                         <div class="form-group">
                                                             <input type="color"  style="padding: 0 1rem; border-radius: 10rem;"
-                                                                id="color" aria-describedby="color"
+                                                                id="categoryColor" aria-describedby="color"
                                                                 placeholder="color" >
                                                         </div>
                                                         <div class="form-group">
                                                             <input type="text" class="form-control form-control-user"
-                                                                id="name" aria-describedby="name"
+                                                                id="categoryName" aria-describedby="name"
                                                                 placeholder="Name">
                                                         </div>
                                                     </div>
                                                     <div class="form-group">
-                                                        <textarea class="form-control form-control-user" id="description" placeholder="Description"></textarea>
+                                                        <input type="text" class="form-control form-control-user" id="categoryBudget" aria-describedby="budget" placeholder="Budget">
                                                     </div>
-                                                    <a onclick="" class="btn btn-primary btn-user btn-block">
+                                                    <div class="form-group">
+                                                        <textarea class="form-control form-control-user" id="categoryDescription" placeholder="Description"></textarea>
+                                                    </div>
+                                                    <a onclick="addCategory()" class="btn btn-primary btn-user btn-block">
                                                         Add
                                                     </a>
                                                 </form>
