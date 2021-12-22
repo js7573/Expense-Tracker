@@ -108,6 +108,9 @@ async function checkIfSignedIn(){
         case "tables-new.html":
           expensesOverviewCode();
           break;
+        case "manageCategories.html":
+          manageCategoriesCode();
+          break;
       }
     }); 
   }
@@ -168,6 +171,10 @@ async function expensesOverviewCode(){
   });
 }
 
+async function manageCategoriesCode(){
+  showCategories();
+}
+
 async function addExpense(){
   let expenseName = document.getElementById("expenseName").value;
   let expenseAmount = document.getElementById("expenseAmount").value;
@@ -211,9 +218,10 @@ async function addCategory(){
   document.getElementById("categoryDescription").value = "";
   document.getElementById("categoryBudget").value = "";
 
-  const res = await db.collection('Categories').doc(categoryName).set(categoryData);
+  const res = await db.collection('Categories').doc().set(categoryData);
 }
 
+// Show correct categories in dropdown menus
 async function listCategories(){
   let select = document.getElementById("expenseCategories");
   let options = [];
@@ -221,7 +229,13 @@ async function listCategories(){
   const categoriesRef = db.collection('Categories');
   const categories = await categoriesRef.get();
   categories.forEach(category => {
-    options.push(category.id);
+    if(!category.data().Name)
+      options.push(category.id);
+  });
+
+  const customCategories = await categoriesRef.where('UserID', '==', signedInUser.email).get();
+  customCategories.forEach(category => {
+    options.push(category.data().Name);
   });
 
   for(var i = 0; i < options.length; i++) {
@@ -231,4 +245,36 @@ async function listCategories(){
     el.value = opt;
     select.appendChild(el);
   }
+}
+
+// Show correct categories on categories & budgets page
+async function showCategories(){
+  let categoriesRef = db.collection('Categories');
+  let categories = await categoriesRef.get();
+  let categoriesDiv = document.getElementById("allCategories"); 
+  
+  categories.forEach(category => {
+    let categoryId = category.id;
+    let categoryData = category.data();
+    let categoryDiv = 
+    '<div class="col-md-6 mb-4">' +
+        '<div class="card border-left-primary shadow h-100 py-2" style="border-left:.25rem solid ' + categoryData.Color + '!important;>' + 
+            '<div class="card-body" style="background:' + categoryData.Color + ';>' + 
+                '<div class="row no-gutters align-items-center">' + 
+                    '<div class="col mr-2">' +
+                        '<div class="text-xs font-weight-bold text-primary text-uppercase mb-1">' +
+                             categoryId +'</div>' +
+                        '<div class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>' +
+                    '</div>' +
+                    '<div class="col-auto">' +
+                        '<a href="#" class="btn btn-danger btn-circle">' +
+                            '<i class="fas fa-trash"></i>' +
+                        '</a>' +
+                    '</div>' +
+                '</div>'+
+            '</div>'+
+        '</div>'+
+    '</div>';
+    categoriesDiv.innerHTML += categoryDiv;
+  });
 }
