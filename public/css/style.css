@@ -12,3 +12,9 @@
     margin: 0 auto;
     justify-content: space-around;
 }
+
+.editBudget{
+    border:none;
+    font-weight: 700!important;
+    color:#5a5c69;
+}

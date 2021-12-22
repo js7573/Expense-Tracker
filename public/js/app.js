@@ -250,31 +250,117 @@ async function listCategories(){
 // Show correct categories on categories & budgets page
 async function showCategories(){
   let categoriesRef = db.collection('Categories');
+  let budgetsRef = db.collection('Budgets');
+  let budgets = await budgetsRef.where('UserID', '==', signedInUser.email).get();
   let categories = await categoriesRef.get();
+  let customCategories = await categoriesRef.where('UserID', '==', signedInUser.email).get();
   let categoriesDiv = document.getElementById("allCategories"); 
   
   categories.forEach(category => {
     let categoryId = category.id;
     let categoryData = category.data();
-    let categoryDiv = 
-    '<div class="col-md-6 mb-4">' +
-        '<div class="card border-left-primary shadow h-100 py-2" style="border-left:.25rem solid ' + categoryData.Color + '!important;>' + 
-            '<div class="card-body" style="background:' + categoryData.Color + ';>' + 
-                '<div class="row no-gutters align-items-center">' + 
-                    '<div class="col mr-2">' +
-                        '<div class="text-xs font-weight-bold text-primary text-uppercase mb-1">' +
-                             categoryId +'</div>' +
-                        '<div class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>' +
-                    '</div>' +
-                    '<div class="col-auto">' +
-                        '<a href="#" class="btn btn-danger btn-circle">' +
-                            '<i class="fas fa-trash"></i>' +
-                        '</a>' +
-                    '</div>' +
+    
+    if(!categoryData.Name){
+      let budgetForCategory = "Not set";
+
+      budgets.forEach(budget => {
+        if(budget.data().CategoryID === categoryId && budget.data().Budget !== "")
+          budgetForCategory = budget.data().Budget + "€";
+      });
+      
+      let categoryDiv = 
+        '<div class="col-md-6 mb-4">' +
+            '<div class="card border-left-primary shadow h-100 py-2" style="border-left:.25rem solid ' + categoryData.Color + '!important;>' + 
+                '<div class="card-body" style="background:' + categoryData.Color + ';>' + 
+                    '<div class="row no-gutters align-items-center">' + 
+                        '<div class="col mr-2">' +
+                            '<div class="text-xs font-weight-bold text-primary text-uppercase mb-1">' + categoryId +'</div>' +
+                            '<div class="h5 mb-0 font-weight-bold text-gray-800">' + 
+                              'Budget: <input type="text" onfocusout="saveBudget(this)" id="editBudget' + categoryId + '" class="editBudget" value="' + budgetForCategory + '" disabled>' + '</input>' +
+                            ' </div>' +
+                        '</div>' +
+                        '<div class="col-auto">' +
+                            '<button class="btn btn-primary" value="' + categoryId + '"onclick="editBudget(this, this.value)">Edit budget</button>' +
+                        '</div>' +
+                    '</div>'+
                 '</div>'+
             '</div>'+
-        '</div>'+
-    '</div>';
+        '</div>';
+      categoriesDiv.innerHTML += categoryDiv;
+    }
+  });
+
+  customCategories.forEach(category => {
+    let categoryId = category.id;
+    let categoryData = category.data();
+
+    let budgetForCategory = "Not set";
+
+    budgets.forEach(budget => {
+      if(budget.data().CategoryID === categoryId)
+        budgetForCategory = budget.data().Budget + "€";
+    });
+
+    let categoryDiv = 
+      '<div class="col-md-6 mb-4">' +
+          '<div class="card border-left-primary shadow h-100 py-2" style="border-left:.25rem solid ' + categoryData.Color + '!important;>' + 
+              '<div class="card-body" style="background:' + categoryData.Color + ';>' + 
+                  '<div class="row no-gutters align-items-center">' + 
+                      '<div class="col mr-2">' +
+                          '<div class="text-xs font-weight-bold text-primary text-uppercase mb-1">' + categoryData.Name +'</div>' +
+                          '<div class="h5 mb-0 font-weight-bold text-gray-800">' + 
+                            'Budget: <input type="text" onfocusout="saveBudget(this)" id="editBudget' + categoryId + '" class="editBudget" value="' + budgetForCategory + '" disabled>' + '</input>' +
+                          '</div>' +
+                      '</div>' +
+                      '<div class="col-auto">' +
+                          '<button class="btn btn-primary" value="' + categoryId + '"onclick="editBudget(this, this.value)">Edit budget</button>' +
+                      '</div>' +
+                  '</div>'+
+              '</div>'+
+          '</div>'+
+      '</div>';
     categoriesDiv.innerHTML += categoryDiv;
   });
+}
+
+function editBudget(button, categoryId){
+  button.style.background = "green";
+  button.style.border = "none";
+  button.innerHTML = "Confirm budget";
+  let budgetInput = document.getElementById("editBudget" + categoryId);
+  budgetInput.value = "";
+  budgetInput.placeholder = "Enter new budget";
+  budgetInput.disabled = false;
+  budgetInput.focus();
+}
+
+async function saveBudget(input){
+  let newBudgetValue = input.value;
+  let selectedBudgetId = input.id.substring(10);
+  input.disabled = true;
+  let budgetsRef = db.collection('Budgets');
+  let budgets = await budgetsRef.where('UserID', '==', signedInUser.email).get();
+  let budgetID = null;
+
+  budgets.forEach(budget => {
+    if(budget.data().CategoryID === selectedBudgetId)
+      budgetID = budget.id;
+  });
+
+  if(budgetID == null){
+    const budgetData = {
+      Budget: newBudgetValue,
+      CategoryID: selectedBudgetId,
+      UserID: signedInUser.email,
+    };
+    const addBudget = await db.collection('Budgets').doc().set(budgetData);
+  }
+
+  else{
+    const correctBudgetRef = db.collection('Budgets').doc(budgetID);
+    // Set the 'capital' field of the city
+    const updateBudget = await correctBudgetRef.update({Budget: newBudgetValue});
+  }
+
+  location.reload();
 }
