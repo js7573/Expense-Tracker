@@ -122,19 +122,27 @@ async function checkIfSignedIn(){
 }
 
 async function dashboardCode(balance){
-  // Show current balance
-  document.getElementsByClassName("total-amount-spent")[0].innerHTML = "<h1>" + balance + " €</h1>";
-
   // Populate expenses table (show last 3 expenses by date)
   const expensesRef = db.collection('Expenses');
+
   let expenses = await expensesRef.where('UserID', '==', signedInUser.email).orderBy('Date', 'desc').limit(3).get();
+  let allExpenses = await expensesRef.where('UserID', '==', signedInUser.email).get();
+
+  let budgetsRef = db.collection('Budgets');
+  let budgets = await budgetsRef.where('UserID', '==', signedInUser.email).get();
+
+  let categoriesRef = db.collection('Categories');
+  let categories = await categoriesRef.get();
+  let customCategories = await categoriesRef.where('UserID', '==', signedInUser.email).get();
+
+  let month = new Date().getMonth() + 1 + "";
+  let expensesThisMonth = 0;
 
   $(document).ready(function() {
       let table = $('#dataTable').DataTable({searching: false, paging: false, info: false});
       
       expenses.forEach(expense => {
         expenseData = expense.data();
-
         table.row.add([
           expenseData.Name,
           expenseData.Amount,
@@ -142,6 +150,81 @@ async function dashboardCode(balance){
           expenseData.CategoryID,
           expenseData.Description
         ]).draw(false);
+      });
+
+      // Show money spent this month
+      allExpenses.forEach(expense => {
+        expenseData = expense.data();
+        let expenseMonth = expenseData.Date.split("-")[1];
+        if(expenseMonth === month)
+          expensesThisMonth += parseFloat(expenseData.Amount);
+      });
+      document.getElementsByClassName("total-amount-spent")[0].innerHTML = "<h1>" + expensesThisMonth.toFixed(2) + " €</h1>";
+
+      //Show percentages of defined budgets
+      budgets.forEach(budget => {
+
+        let budgetData = budget.data();
+
+        if(budgetData.Budget !== ""){
+          let budgetSpent = 0;
+
+        let categoryColor = null;
+        let categoryName = null;
+
+        categories.forEach(category => {
+          categoryData = category.data();
+          if(budgetData.CategoryID === category.id){
+            categoryColor = categoryData.Color;
+            if(categoryData.Name)
+              categoryName = categoryData.Name;
+            else
+              categoryName = category.id;
+          }
+        });
+
+        allExpenses.forEach(expense => {
+          expenseData = expense.data();
+          if(expenseData.CategoryID === budgetData.CategoryID && budgetData.Budget !== "")
+            budgetSpent += parseFloat(expenseData.Amount);
+        });
+
+        let percentage = 0;
+
+        if(budgetSpent > 0){
+          percentage = (budgetSpent * 100) / budgetData.Budget;
+          percentage = percentage.toFixed(2);
+        }
+
+        let budgetCard = '' +
+        '<div class="col-xl-3 col-md-6 mb-4">'+
+            '<div class="card border-left-info shadow h-100 py-2" style="border-left:.25rem solid ' + categoryColor + '!important;>'+
+                '<div class="card-body" style="background:' + categoryData.Color + ';>'+
+                    '<div class="row no-gutters align-items-center">'+
+                        '<div class="col mr-2">'+
+                            '<div style="color:' + categoryColor + '!important;"class="text-xs font-weight-bold text-info text-uppercase mb-1">' + categoryName + '</div>'+
+                            '<div class="row no-gutters align-items-center">'+
+                                '<div class="col-auto">'+
+                                    '<div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">' + percentage + ' %</div>'+
+                                '</div>'+
+                                '<div class="col">'+
+                                    '<div class="progress progress-sm mr-2">'+
+                                        '<div class="progress-bar bg-info" role="progressbar"'+
+                                            'style="width: '+ percentage + '%;background: ' + categoryColor + '!important;"  aria-valuenow="'+ percentage +'" aria-valuemin="0"'+
+                                            'aria-valuemax="100"></div>'+
+                                    '</div>'+
+                                '</div>'+
+                            '</div>'+
+                        '</div>'+
+                        '<div class="col-auto">'+
+                            '<i class="fas fa-clipboard-list fa-2x text-gray-300"></i>'+
+                        '</div>'+
+                    '</div>'+
+                '</div>'+
+            '</div>'+
+        '</div>';
+        document.getElementById("dashboardBudgets").innerHTML += budgetCard;
+        }
       });
   });
 }
@@ -195,6 +278,15 @@ async function addExpense(){
   document.getElementById("expenseDate").value = "";
   document.getElementById("expenseCategories").value = "";
   document.getElementById("expenseDescription").value = "";
+
+  const categoriesRef = db.collection('Categories');
+  const customCategories = await categoriesRef.where('Name', '==', expenseCategory).get();
+
+  categoryId = null;
+  customCategories.forEach(category => {
+    categoryId = category.id;
+    expenseData.CategoryID = categoryId;
+  });
 
   const res = await db.collection('Expenses').doc().set(expenseData);
 }
@@ -297,7 +389,7 @@ async function showCategories(){
     let budgetForCategory = "Not set";
 
     budgets.forEach(budget => {
-      if(budget.data().CategoryID === categoryId)
+      if(budget.data().CategoryID === categoryId && budget.data().Budget !== "")
         budgetForCategory = budget.data().Budget + "€";
     });
 
