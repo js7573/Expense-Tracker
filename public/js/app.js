@@ -59,21 +59,52 @@ async function addUser(){
 
     // Add user to firebase authentication to allow login
     auth.createUserWithEmailAndPassword(email, password).then(credentials => {
+      db.collection('Users').doc(email).set(userData);
       alert("User created:\n" + credentials);
+      window.location.replace("/index.html");
+    }).catch(error => {
+      let er = document.getElementById("err");
+      if(error.code === "auth/email-already-in-use" || error.code === "auth/invalid-email"){
+        er.innerHTML = "Invalid email."
+      }
+      else if (error.code === "auth/weak-password"){
+        er.innerHTML = "Weak password."
+      }
+      else{
+        er.innerHTML = "Oops something went wrong. Please try again later."
+      }
     });
     
     // Add a new document in collection "users" with email as ID
-    const res = await db.collection('Users').doc(email).set(userData);
+    //const res = await db.collection('Users').doc(email).set(userData);
   }
+  else{
+    document.getElementById("err").innerHTML = "Repeat password and password do not match."
+  }
+  
 }
 
 async function signIn(){
+  console.log("signing");
   let email = document.getElementById("exampleInputEmail").value;
   let password = document.getElementById("exampleInputPassword").value;
   auth.signInWithEmailAndPassword(email, password).then(credentials => {
   // Signed in 
   user = credentials.user;
   window.location.replace("/dashboard-new.html");
+  }).catch((error) => {
+    let er = document.getElementById("err");
+    console.log(error.code);
+    if(error.code === "auth/wrong-password"){
+      er.innerHTML = "Wrong password.";
+    }
+    else if(error.code === "auth/invalid-email" || error.code === "auth/user-disabled" || error.code === "auth/user-not-found"){
+      er.innerHTML = "Wrong email.";
+    }
+    else{
+      er.innerHTML = "Oops something went wrong. Please try again later."
+    }
+    //er.innerHTML = "The email address or password is incorrect.";
   });
 }
 
