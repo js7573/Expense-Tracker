@@ -76,7 +76,58 @@ async function addUser(){
     });
     
     // Add a new document in collection "users" with email as ID
-    const res = await db.collection('Users').doc(email).set(userData);
+    let res = await db.collection('Users').doc(email).set(userData);
+
+    categoryData = {
+      Name: "Rent",
+      Color: "#ff0000",
+      Budget: null,
+      Description: "",
+      UserID: email,
+    };
+
+    res = await db.collection('Categories').doc().set(categoryData);
+
+    categoryData = {
+      Name: "Shopping",
+      Color: "#ffff00",
+      Budget: null,
+      Description: "",
+      UserID: email,
+    };
+
+    res = await db.collection('Categories').doc().set(categoryData);
+
+    categoryData = {
+      Name: "Subscriptions",
+      Color: "#00ff00",
+      Budget: null,
+      Description: "",
+      UserID: email,
+    };
+
+    res = await db.collection('Categories').doc().set(categoryData);
+
+    categoryData = {
+      Name: "Traffic",
+      Color: "#0000ff",
+      Budget: null,
+      Description: "",
+      UserID: email,
+    };
+
+    res = await db.collection('Categories').doc().set(categoryData);
+
+    categoryData = {
+      Name: "Vacation",
+      Color: "#ff00ee",
+      Budget: null,
+      Description: "",
+      UserID: email,
+    };
+
+    res = await db.collection('Categories').doc().set(categoryData);
+
     window.location.replace("/index.html");
   }
   else{
@@ -154,35 +205,56 @@ async function checkIfSignedIn(){
 }
 
 async function dashboardCode(){
-  // Populate expenses table (show last 3 expenses by date)
+  // Populate expenses table (show last 5 expenses by date)
   const expensesRef = db.collection('Expenses');
 
-  let expenses = await expensesRef.where('UserID', '==', signedInUser.email).orderBy('Date', 'desc').limit(3).get();
+  let expenses = await expensesRef.where('UserID', '==', signedInUser.email).orderBy('Date', 'desc').limit(5).get();
   let allExpenses = await expensesRef.where('UserID', '==', signedInUser.email).get();
 
   let budgetsRef = db.collection('Budgets');
   let budgets = await budgetsRef.where('UserID', '==', signedInUser.email).get();
 
   let categoriesRef = db.collection('Categories');
-  let categories = await categoriesRef.get();
-  let customCategories = await categoriesRef.where('UserID', '==', signedInUser.email).get();
+  let categories = await categoriesRef.where('UserID', '==', signedInUser.email).get();
 
   let month = new Date().getMonth() + 1 + "";
   let expensesThisMonth = 0;
 
+  let tableColors = [];
+
   $(document).ready(function() {
-      let table = $('#dataTable').DataTable({searching: false, paging: false, info: false});
+      let table = $('#dataTableDashboard').DataTable({searching: false, paging: false, info: false, order: [[ 2, "desc" ]]});
       
       expenses.forEach(expense => {
         expenseData = expense.data();
+        let categoryName = "";
+        let categoryColor = "";
+        
+        categories.forEach(category => {
+          if(expenseData.CategoryID === category.id){
+            categoryName = category.data().Name;
+            categoryColor = category.data().Color;
+            tableColors.push(categoryColor);
+          }
+        });
+
+        let dateValues = expenseData.Date.split("-");
+
         table.row.add([
           expenseData.Name,
-          expenseData.Amount,
-          expenseData.Date,
-          expenseData.CategoryID,
+          expenseData.Amount + " €",
+          dateValues[2] + "." + dateValues[1] + "." + dateValues[0],
+          categoryName,
           expenseData.Description
-        ]).draw(false);
+        ]).draw().node();
       });
+
+      let i = 0;
+      table.rows().every(function(rowIdx, tableLoop, rowLoop){
+        var node = this.node();
+        node.childNodes[0].style.borderLeft = "5px solid " + tableColors[i];
+        i++;
+      })
 
       // Show money spent this month
       allExpenses.forEach(expense => {
@@ -191,7 +263,11 @@ async function dashboardCode(){
         if(expenseMonth === month)
           expensesThisMonth += parseFloat(expenseData.Amount);
       });
-      document.getElementsByClassName("total-amount-spent")[0].innerHTML = "<h1>" + expensesThisMonth.toFixed(2) + " €</h1>";
+      const date = new Date(); 
+      const monthNames = ["January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+      ];
+      document.getElementsByClassName("total-amount-spent")[0].innerHTML = "<h3 style=\"margin:0 auto;\">Total amount spent in " + monthNames[date.getMonth()] + " " + date.getFullYear() +"</h3><br/><h1 style=\"margin-left:3.75em;\">" + expensesThisMonth.toFixed(2) + " €</h1>";
 
       //Show percentages of defined budgets
       budgets.forEach(budget => {
@@ -267,22 +343,44 @@ async function addExpenseCode(){
 
 async function expensesOverviewCode(){
   const expensesRef = db.collection('Expenses');
-  let expenses = await expensesRef.where('UserID', '==', signedInUser.email).orderBy('Date', 'desc').get();
+  const categoriesRef = db.collection('Categories');
 
+  let expenses = await expensesRef.where('UserID', '==', signedInUser.email).orderBy('Date', 'desc').get();
+  let categories = await categoriesRef.where('UserID', '==', signedInUser.email).get();
+
+  let tableColors = [];
   $(document).ready(function() {
-      let table = $('#dataTable').DataTable();
+      let table = $('#dataTableOverview').DataTable({order: [[ 2, "desc" ]]});
       
       expenses.forEach(expense => {
         expenseData = expense.data();
 
+        let categoryName = "";
+        categories.forEach(category => {
+          if(expenseData.CategoryID === category.id){
+            categoryName = category.data().Name;
+            categoryColor = category.data().Color;
+            tableColors.push(categoryColor);
+          }
+        });
+
+        let dateValues = expenseData.Date.split("-");
+
         table.row.add([
           expenseData.Name,
-          expenseData.Amount,
-          expenseData.Date,
-          expenseData.CategoryID,
+          expenseData.Amount + "€",
+          dateValues[2] + "." + dateValues[1] + "." + dateValues[0],
+          categoryName,
           expenseData.Description
         ]).draw(false);
       });
+
+      let i = 0;
+      table.rows().every(function(rowIdx, tableLoop, rowLoop){
+        var node = this.node();
+        node.childNodes[0].style.borderLeft = "5px solid " + tableColors[i];
+        i++;
+      })
   });
 }
 
@@ -351,14 +449,10 @@ async function listCategories(){
   let options = [];
 
   const categoriesRef = db.collection('Categories');
-  const categories = await categoriesRef.get();
-  categories.forEach(category => {
-    if(!category.data().Name)
-      options.push(category.id);
-  });
 
-  const customCategories = await categoriesRef.where('UserID', '==', signedInUser.email).get();
-  customCategories.forEach(category => {
+  const categories = await categoriesRef.where('UserID', '==', signedInUser.email).get();
+
+  categories.forEach(category => {
     options.push(category.data().Name);
   });
 
@@ -375,46 +469,13 @@ async function listCategories(){
 async function showCategories(){
   let categoriesRef = db.collection('Categories');
   let budgetsRef = db.collection('Budgets');
+
   let budgets = await budgetsRef.where('UserID', '==', signedInUser.email).get();
-  let categories = await categoriesRef.get();
-  let customCategories = await categoriesRef.where('UserID', '==', signedInUser.email).get();
+  let categories = await categoriesRef.where('UserID', '==', signedInUser.email).get();
+
   let categoriesDiv = document.getElementById("allCategories"); 
-  
+
   categories.forEach(category => {
-    let categoryId = category.id;
-    let categoryData = category.data();
-    
-    if(!categoryData.Name){
-      let budgetForCategory = "Not set";
-
-      budgets.forEach(budget => {
-        if(budget.data().CategoryID === categoryId && budget.data().Budget !== "")
-          budgetForCategory = budget.data().Budget + "€";
-      });
-      
-      let categoryDiv = 
-        '<div class="col-md-6 mb-4">' +
-            '<div class="card border-left-primary shadow h-100 py-2" style="border-left:.25rem solid ' + categoryData.Color + '!important;>' + 
-                '<div class="card-body" style="background:' + categoryData.Color + ';>' + 
-                    '<div class="row no-gutters align-items-center">' + 
-                        '<div class="col mr-2">' +
-                            '<div class="text-xs font-weight-bold text-primary text-uppercase mb-1">' + categoryId +'</div>' +
-                            '<div class="h5 mb-0 font-weight-bold text-gray-800">' + 
-                              'Budget: <input type="text" onfocusout="saveBudget(this)" id="editBudget' + categoryId + '" class="editBudget" value="' + budgetForCategory + '" disabled>' + '</input>' +
-                            ' </div>' +
-                        '</div>' +
-                        '<div class="col-auto">' +
-                            '<button class="btn btn-primary" value="' + categoryId + '"onclick="editBudget(this, this.value)">Edit budget</button>' +
-                        '</div>' +
-                    '</div>'+
-                '</div>'+
-            '</div>'+
-        '</div>';
-      categoriesDiv.innerHTML += categoryDiv;
-    }
-  });
-
-  customCategories.forEach(category => {
     let categoryId = category.id;
     let categoryData = category.data();
 
@@ -437,6 +498,7 @@ async function showCategories(){
                           '</div>' +
                       '</div>' +
                       '<div class="col-auto">' +
+                          '<button class="btn btn-primary" value="' + categoryId + '"onclick="edit(this, this.value)">Edit category</button>' +
                           '<button class="btn btn-primary" value="' + categoryId + '"onclick="editBudget(this, this.value)">Edit budget</button>' +
                       '</div>' +
                   '</div>'+

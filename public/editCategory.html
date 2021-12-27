@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Expense Tracker - Expenses</title>
+    <title>Expense Tracker - Dashboard</title>
 
     <!-- FIREBASE IMPORT (must be included in all files)-->
     <!-- update the version number as needed -->
@@ -30,17 +30,15 @@
     -->
     <script defer src="/__/firebase/init.js?useEmulator=false"></script>
 
-    <!-- Custom fonts for this template -->
+    <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
 
-    <!-- Custom styles for this template -->
+    <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
-
-    <!-- Custom styles for this page -->
-    <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
 
     <script src="js/app.js"></script>
 
@@ -51,7 +49,7 @@
     <!-- Page Wrapper -->
     <div id="wrapper">
 
-            <!-- Sidebar -->
+             <!-- Sidebar -->
                 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
                     <!-- Sidebar - Brand -->
@@ -124,11 +122,9 @@
                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
 
                     <!-- Sidebar Toggle (Topbar) -->
-                    <form class="form-inline">
-                        <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                            <i class="fa fa-bars"></i>
-                        </button>
-                    </form>
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button>
 
                     <!-- Topbar Navbar -->
                     <ul class="navbar-nav ml-auto">
@@ -162,29 +158,56 @@
                 <div class="container-fluid">
 
                     <!-- Page Heading -->
-                    <h1 class="h3 mb-2 text-gray-800">Expenses</h1>
-
-                    <!-- DataTales Example -->
-                    <div class="card shadow mb-4">
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-bordered" id="dataTableOverview" width="100%" cellspacing="0">
-                                    <thead>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Amount spent</th>
-                                            <th>Date</th>
-                                            <th>Category</th>
-                                            <th>Description</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800">Edit category</h1>
                     </div>
 
+                    <div class="row justify-content-center">
+
+                        <div class="col-xl-5 col-lg-6 col-md-9">
+            
+                            <div class="card o-hidden border-0 shadow-lg my-5">
+                                <div class="card-body p-0">
+                                    <!-- Nested Row within Card Body -->
+                                    
+                                        <div class="col">
+                                            <div class="p-5">
+                            
+                                                <form class="user">
+                                                    <div class="row" style="align-items: center; justify-content: space-around">
+                                                        <div class="form-group">
+                                                            <input type="color"  style="padding: 0 1rem; border-radius: 10rem;"
+                                                                id="editCategoryColor" aria-describedby="color"
+                                                                placeholder="color" >
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <input type="text" class="form-control form-control-user"
+                                                                id="editCategoryName" aria-describedby="name"
+                                                                placeholder="Name">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <input type="text" class="form-control form-control-user" id="categoryBudget" aria-describedby="budget" placeholder="Budget">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <textarea class="form-control form-control-user" id="categoryDescription" placeholder="Description"></textarea>
+                                                    </div>
+                                                    <a onclick="editCategory()" class="btn btn-primary btn-user btn-block">
+                                                        Save
+                                                    </a>
+                                                    <a onclick="deleteCategory()" class="btn btn-primary btn-user btn-block">
+                                                        Delete category
+                                                    </a>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    
+                                </div>
+                            </div>
+            
+                        </div>
+            
+                    </div>
                 </div>
                 <!-- /.container-fluid -->
 
@@ -195,7 +218,7 @@
             <footer class="sticky-footer bg-white">
                 <div class="container my-auto">
                     <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; Your Website 2020</span>
+                        <span>Copyright &copy; Your Website 2021</span>
                     </div>
                 </div>
             </footer>
@@ -243,12 +266,9 @@
     <script src="js/sb-admin-2.min.js"></script>
 
     <!-- Page level plugins -->
-    <script src="vendor/datatables/jquery.dataTables.min.js"></script>
-    <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
+    <script src="vendor/chart.js/Chart.min.js"></script>
 
-    <!-- Page level custom scripts -->
-    <script src="js/demo/datatables-demo.js"></script>
-
+    
 </body>
 
 </html>
