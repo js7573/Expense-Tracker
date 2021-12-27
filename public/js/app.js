@@ -57,11 +57,11 @@ async function addUser(){
       Password: password
     };
 
+  let usersRef = db.collection("Users");
+
     // Add user to firebase authentication to allow login
     auth.createUserWithEmailAndPassword(email, password).then(credentials => {
-      db.collection('Users').doc(email).set(userData);
-      alert("User created:\n" + credentials);
-      window.location.replace("/index.html");
+      alert("User created:\n" + credentials.user.email);
     }).catch(error => {
       let er = document.getElementById("err");
       if(error.code === "auth/email-already-in-use" || error.code === "auth/invalid-email"){
@@ -76,7 +76,8 @@ async function addUser(){
     });
     
     // Add a new document in collection "users" with email as ID
-    //const res = await db.collection('Users').doc(email).set(userData);
+    const res = await db.collection('Users').doc(email).set(userData);
+    window.location.replace("/index.html");
   }
   else{
     document.getElementById("err").innerHTML = "Repeat password and password do not match."
@@ -152,7 +153,7 @@ async function checkIfSignedIn(){
   }
 }
 
-async function dashboardCode(balance){
+async function dashboardCode(){
   // Populate expenses table (show last 3 expenses by date)
   const expensesRef = db.collection('Expenses');
 
