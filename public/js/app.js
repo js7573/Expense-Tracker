@@ -409,7 +409,6 @@ async function editCategoryCode(categoryID){
   let category = await db.collection('Categories').doc(categoryID).get();
   document.getElementById("editCategoryColor").value = category.data().Color;
   document.getElementById("editCategoryName").value = category.data().Name;
-  document.getElementById("editCategoryBudget").value = category.data().Budget;
   document.getElementById("editCategoryDescription").value = category.data().Description;
   let a = 5;
 }
@@ -483,12 +482,10 @@ async function updateCategory(){
   let categoryColor = document.getElementById("editCategoryColor").value;
   let categoryName = document.getElementById("editCategoryName").value;
   let categoryDescription = document.getElementById("editCategoryDescription").value;
-  let categoryBudget = document.getElementById("editCategoryBudget").value;
 
   const categoryData = {
     Name: categoryName,
     Color: categoryColor,
-    Budget: categoryBudget,
     Description: categoryDescription,
     UserID: signedInUser.email,
   };
@@ -496,7 +493,6 @@ async function updateCategory(){
   document.getElementById("editCategoryColor").value = "";
   document.getElementById("editCategoryName").value = "";
   document.getElementById("editCategoryDescription").value = "";
-  document.getElementById("editCategoryBudget").value = "";
 
   const res = await db.collection('Categories').doc(categoryID).set(categoryData);
 }
@@ -513,7 +509,6 @@ async function deleteCategory(){
   document.getElementById("editCategoryColor").value = "";
   document.getElementById("editCategoryName").value = "";
   document.getElementById("editCategoryDescription").value = "";
-  document.getElementById("editCategoryBudget").value = "";
 
   window.location.replace("/manage-categories.html");
 }
@@ -574,6 +569,7 @@ async function showCategories(){
                       '</div>' +
                       '<div class="col-auto">' +
                           '<button class="btn btn-primary" value="' + categoryId + '"onclick="editCategory(this.value)">Edit category</button>' +
+                          '<span style="width:20px;"></span>' +
                           '<button class="btn btn-primary" value="' + categoryId + '"onclick="editBudget(this, this.value)">Edit budget</button>' +
                       '</div>' +
                   '</div>'+
