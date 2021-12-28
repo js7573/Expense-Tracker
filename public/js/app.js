@@ -143,7 +143,7 @@ async function signIn(){
   auth.signInWithEmailAndPassword(email, password).then(credentials => {
   // Signed in 
   user = credentials.user;
-  window.location.replace("/dashboard-new.html");
+  window.location.replace("/dashboard.html");
   }).catch((error) => {
     let er = document.getElementById("err");
     console.log(error.code);
@@ -180,20 +180,23 @@ async function checkIfSignedIn(){
 
       let currentSite = window.location.href.split("/");
       currentSite = currentSite[currentSite.length - 1];
-
+      args = currentSite.split("?")[1];
+      currentSite = currentSite.split("?")[0];
       switch(currentSite){
-        case "dashboard-new.html":
+        case "dashboard.html":
           dashboardCode(balance);
           break;
-        case "addExpense.html":
+        case "add-expense.html":
           addExpenseCode();
           break;
-        case "tables-new.html":
+        case "expenses-overview.html":
           expensesOverviewCode();
           break;
-        case "manageCategories.html":
+        case "manage-categories.html":
           manageCategoriesCode();
           break;
+        case "edit-category.html":
+          editCategoryCode(args);
       }
     }); 
   }
@@ -388,6 +391,16 @@ async function manageCategoriesCode(){
   showCategories();
 }
 
+async function editCategoryCode(categoryID){
+  categoryID = categoryID.split("=")[1];
+  let category = await db.collection('Categories').doc(categoryID).get();
+  document.getElementById("editCategoryColor").value = category.data().Color;
+  document.getElementById("editCategoryName").value = category.data().Name;
+  document.getElementById("editCategoryBudget").value = category.data().Budget;
+  document.getElementById("editCategoryDescription").value = category.data().Description;
+  let a = 5;
+}
+
 async function addExpense(){
   let expenseName = document.getElementById("expenseName").value;
   let expenseAmount = document.getElementById("expenseAmount").value;
@@ -441,6 +454,55 @@ async function addCategory(){
   document.getElementById("categoryBudget").value = "";
 
   const res = await db.collection('Categories').doc().set(categoryData);
+}
+
+function editCategory(categoryId){
+  window.location.replace("/edit-category.html?categoryId=" + categoryId);
+}
+
+async function updateCategory(){
+  let currentSite = window.location.href.split("/");
+  currentSite = currentSite[currentSite.length - 1];
+  args = currentSite.split("?")[1];
+  currentSite = currentSite.split("?")[0];
+  categoryID = args.split("=")[1];
+
+  let categoryColor = document.getElementById("editCategoryColor").value;
+  let categoryName = document.getElementById("editCategoryName").value;
+  let categoryDescription = document.getElementById("editCategoryDescription").value;
+  let categoryBudget = document.getElementById("editCategoryBudget").value;
+
+  const categoryData = {
+    Name: categoryName,
+    Color: categoryColor,
+    Budget: categoryBudget,
+    Description: categoryDescription,
+    UserID: signedInUser.email,
+  };
+
+  document.getElementById("editCategoryColor").value = "";
+  document.getElementById("editCategoryName").value = "";
+  document.getElementById("editCategoryDescription").value = "";
+  document.getElementById("editCategoryBudget").value = "";
+
+  const res = await db.collection('Categories').doc(categoryID).set(categoryData);
+}
+
+async function deleteCategory(){
+  let currentSite = window.location.href.split("/");
+  currentSite = currentSite[currentSite.length - 1];
+  args = currentSite.split("?")[1];
+  currentSite = currentSite.split("?")[0];
+  categoryID = args.split("=")[1];
+
+  const res = await db.collection('Categories').doc(categoryID).delete();
+
+  document.getElementById("editCategoryColor").value = "";
+  document.getElementById("editCategoryName").value = "";
+  document.getElementById("editCategoryDescription").value = "";
+  document.getElementById("editCategoryBudget").value = "";
+
+  window.location.replace("/manage-categories.html");
 }
 
 // Show correct categories in dropdown menus
@@ -498,7 +560,7 @@ async function showCategories(){
                           '</div>' +
                       '</div>' +
                       '<div class="col-auto">' +
-                          '<button class="btn btn-primary" value="' + categoryId + '"onclick="edit(this, this.value)">Edit category</button>' +
+                          '<button class="btn btn-primary" value="' + categoryId + '"onclick="editCategory(this.value)">Edit category</button>' +
                           '<button class="btn btn-primary" value="' + categoryId + '"onclick="editBudget(this, this.value)">Edit budget</button>' +
                       '</div>' +
                   '</div>'+
