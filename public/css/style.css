@@ -19,6 +19,38 @@
     color:#5a5c69;
 }
 
-.tableClass{
-    background:red!important;
+form.user .form-control-user{
+    font-size:.8rem;
+    border-radius:0.35rem;
+    padding:1.5rem 1rem
+}
+
+form.user .btn-user {
+    font-size:.8rem;
+    border-radius:0.35rem;
+    padding:0.75rem 1rem
+}
+
+input[type="color"]{
+    border-radius: 50%;
+    height: 40px;
+    width: 40px;
+    border: none;
+    outline: none;
+    -webkit-appearance: none;
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0; 
+}
+input[type="color"]::-webkit-color-swatch {
+    border: none;
+    border-radius: 50%;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #4e73df;
+    border-color: #4e73df;
+    margin-top: 10px;
 }
