@@ -53,7 +53,7 @@
                 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
                     <!-- Sidebar - Brand -->
-                    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="dashboard-new.html">
+                    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="dashboard.html">
                         <div class="sidebar-brand-icon rotate-n-15">
                             <i class="fas fa-laugh-wink"></i>
                         </div>
@@ -65,7 +65,7 @@
         
                     <!-- Nav Item - Dashboard -->
                     <li class="nav-item active">
-                        <a class="nav-link" href="dashboard-new.html">
+                        <a class="nav-link" href="dashboard.html">
                             <i class="fas fa-fw fa-tachometer-alt"></i>
                             <span>Dashboard</span></a>
                     </li>
@@ -75,28 +75,28 @@
         
                     <!-- Nav Item - Tables -->
                     <li class="nav-item">
-                        <a class="nav-link" href="addExpense.html">
+                        <a class="nav-link" href="add-expense.html">
                             <i class="fas fa-fw fa-table"></i>
                             <span>Add expense</span></a>
                     </li>
         
                     <!-- Nav Item - Tables -->
                     <li class="nav-item">
-                        <a class="nav-link" href="tables-new.html">
+                        <a class="nav-link" href="expenses-overview.html">
                             <i class="fas fa-fw fa-table"></i>
                             <span>Expenses Overview</span></a>
                     </li>
         
                     <!-- Nav Item - Tables -->
                     <li class="nav-item">
-                        <a class="nav-link" href="manageCategories.html">
+                        <a class="nav-link" href="manage-categories.html">
                             <i class="fas fa-fw fa-table"></i>
                             <span>Categories & budgets</span></a>
                     </li>
         
                     <!-- Nav Item - Charts -->
                     <li class="nav-item">
-                        <a class="nav-link" href="analysis-new.html">
+                        <a class="nav-link" href="analysis.html">
                             <i class="fas fa-fw fa-chart-area"></i>
                             <span>Analysis</span></a>
                     </li>
@@ -159,7 +159,7 @@
 
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">Add category</h1>
+                        <h1 class="h3 mb-0 text-gray-800">Edit category</h1>
                     </div>
 
                     <div class="row justify-content-center">
@@ -175,26 +175,28 @@
                             
                                                 <form class="user">
                                                     <div class="row" style="align-items: center; justify-content: space-around">
-                                                        <div><p>Color:</p></div>
                                                         <div class="form-group">
-                                                            <input type="color" 
-                                                                id="categoryColor" aria-describedby="color"
+                                                            <input type="color"  style="padding: 0 1rem; border-radius: 10rem;"
+                                                                id="editCategoryColor" aria-describedby="color"
                                                                 placeholder="color" >
                                                         </div>
                                                         <div class="form-group">
                                                             <input type="text" class="form-control form-control-user"
-                                                                id="categoryName" aria-describedby="name"
+                                                                id="editCategoryName" aria-describedby="name"
                                                                 placeholder="Name">
                                                         </div>
                                                     </div>
                                                     <div class="form-group">
-                                                        <input type="text" class="form-control form-control-user" id="categoryBudget" aria-describedby="budget" placeholder="Budget">
+                                                        <input type="text" class="form-control form-control-user" id="editCategoryBudget" aria-describedby="budget" placeholder="Budget">
                                                     </div>
                                                     <div class="form-group">
-                                                        <textarea class="form-control form-control-user" id="categoryDescription" placeholder="Description"></textarea>
+                                                        <textarea class="form-control form-control-user" id="editCategoryDescription" placeholder="Description"></textarea>
                                                     </div>
-                                                    <a onclick="addCategory()" class="btn btn-primary btn-user btn-block">
-                                                        Add
+                                                    <a onclick="updateCategory()" class="btn btn-primary btn-user btn-block">
+                                                        Save
+                                                    </a>
+                                                    <a onclick="deleteCategory()" class="btn btn-primary btn-user btn-block">
+                                                        Delete category
                                                     </a>
                                                 </form>
                                             </div>
@@ -247,7 +249,7 @@
                 <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="login.html">Logout</a>
+                    <a class="btn btn-primary" href="index.html">Logout</a>
                 </div>
             </div>
         </div>

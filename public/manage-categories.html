@@ -53,7 +53,7 @@
                 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
                     <!-- Sidebar - Brand -->
-                    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="dashboard-new.html">
+                    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="dashboard.html">
                         <div class="sidebar-brand-icon rotate-n-15">
                             <i class="fas fa-laugh-wink"></i>
                         </div>
@@ -65,38 +65,38 @@
         
                     <!-- Nav Item - Dashboard -->
                     <li class="nav-item active">
-                        <a class="nav-link" href="dashboard-new.html">
+                        <a class="nav-link" href="dashboard.html">
                             <i class="fas fa-fw fa-tachometer-alt"></i>
                             <span>Dashboard</span></a>
                     </li>
         
                     <!-- Divider -->
                     <hr class="sidebar-divider">
-        
+
                     <!-- Nav Item - Tables -->
                     <li class="nav-item">
-                        <a class="nav-link" href="addExpense.html">
+                        <a class="nav-link" href="add-expense.html">
                             <i class="fas fa-fw fa-table"></i>
                             <span>Add expense</span></a>
                     </li>
         
                     <!-- Nav Item - Tables -->
                     <li class="nav-item">
-                        <a class="nav-link" href="tables-new.html">
+                        <a class="nav-link" href="expenses-overview.html">
                             <i class="fas fa-fw fa-table"></i>
                             <span>Expenses Overview</span></a>
                     </li>
         
                     <!-- Nav Item - Tables -->
                     <li class="nav-item">
-                        <a class="nav-link" href="manageCategories.html">
+                        <a class="nav-link" href="manage-categories.html">
                             <i class="fas fa-fw fa-table"></i>
                             <span>Categories & budgets</span></a>
                     </li>
         
                     <!-- Nav Item - Charts -->
                     <li class="nav-item">
-                        <a class="nav-link" href="analysis-new.html">
+                        <a class="nav-link" href="analysis.html">
                             <i class="fas fa-fw fa-chart-area"></i>
                             <span>Analysis</span></a>
                     </li>
@@ -159,70 +159,27 @@
 
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">Add expense</h1>
+                        <h1 class="h3 mb-0 text-gray-800">Manage categories & budgets</h1>
                     </div>
 
                     <div class="row">
-                        <div class="dashboard-buttons">
-    
-                            <a href="manageCategories.html" class="btn btn-primary btn-icon-split">
-                                <!--
+                        <div class="dashboard-buttons mb-4">
+                            <a href="add-category.html" class="btn btn-primary btn-icon-split">
                                 <span class="icon text-white-50">
                                     <i class="fas fa-flag"></i>
                                 </span>
                                 -->
-                                <span class="text">Categories & budgets</span>
+                                <span class="text">Add category</span>
                             </a>
                         </div>
                    </div>
 
-                    <div class="row justify-content-center">
+                   <div class="row" id="allCategories">
 
-                        <div class="col-xl-5 col-lg-6 col-md-9">
-            
-                            <div class="card o-hidden border-0 shadow-lg my-5">
-                                <div class="card-body p-0">
-                                    <!-- Nested Row within Card Body -->
-                                    
-                                        <div class="col">
-                                            <div class="p-5">
-                            
-                                                <form class="user">
-                                                    <div class="form-group">
-                                                        <input type="text" class="form-control form-control-user"
-                                                            id="expenseName" aria-describedby="expenseName"
-                                                            placeholder="Name">
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <input type="number" class="form-control form-control-user"
-                                                            id="expenseAmount" aria-describedby="expenseAmount"
-                                                            placeholder="Expense" >
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <input type="date" class="form-control form-control-user"
-                                                            id="expenseDate" aria-describedby="expenseDate">
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <select class="form-control form-control-user" name="categories" id="expenseCategories" aria-describedby="categories" style="padding: 0 1rem; ">
-                                                            <option value="" disabled selected>Select category</option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <textarea class="form-control form-control-user" id="expenseDescription" aria-describedby="description" placeholder="Description"></textarea>
-                                                    </div>
-                                                    <a onclick="addExpense()" class="btn btn-primary btn-user btn-block">
-                                                        Add
-                                                    </a>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    
-                                </div>
-                            </div>
-            
-                        </div>
-            
                     </div>
+
+
+                    
                 </div>
                 <!-- /.container-fluid -->
 
@@ -264,7 +221,7 @@
                 <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="login.html">Logout</a>
+                    <a class="btn btn-primary" href="index.html">Logout</a>
                 </div>
             </div>
         </div>
@@ -283,7 +240,7 @@
     <!-- Page level plugins -->
     <script src="vendor/chart.js/Chart.min.js"></script>
 
-    
+   
 </body>
 
 </html>
