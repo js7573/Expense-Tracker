@@ -397,7 +397,11 @@ async function expensesOverviewCode(){
         node.childNodes[0].style.borderLeft = "5px solid " + tableColors[i];
         i++;
       })
+      
+      //document.getElementById("dataTableOverview_length").innerHTML = '<label>Show <input type="number" name="dataTableOverview_length" aria-controls="dataTableOverview" class="custom-select custom-select-sm form-control form-control-sm"></input> entries</label>'
+    
   });
+ 
 }
 
 async function manageCategoriesCode(){
@@ -419,6 +423,27 @@ async function addExpense(){
   let expenseDate = document.getElementById("expenseDate").value;
   let expenseCategory = document.getElementById("expenseCategories").value;
   let expenseDescription = document.getElementById("expenseDescription").value;
+  let err = document.getElementById("err");
+
+  //check input
+  if(!expenseName || expenseName.length === 0 ){
+    err.innerHTML ="Missing expense name.";
+    return;
+  }
+  if(isNaN(parseFloat(expenseAmount))){
+    err.innerHTML ="Missing expense amount.";
+    return;
+  }
+  if(!(new Date(expenseDate) !== "Invalid Date" && !isNaN(new Date(expenseDate)))){ 
+    err.innerHTML ="Missing expense date.";
+    return;
+  }
+  if(expenseCategory.length === 0){
+    err.innerHTML ="Missing expense category.";
+    return;
+  }
+
+
   const expenseData = {
     Name: expenseName,
     Amount: expenseAmount,
@@ -443,7 +468,11 @@ async function addExpense(){
     expenseData.CategoryID = categoryId;
   });
 
-  const res = await db.collection('Expenses').doc().set(expenseData);
+  const res = await db.collection('Expenses').doc().set(expenseData).catch(err => {
+    alert(err);
+    return;
+  });
+  alert("Expense added successfully");
 }
 
 async function addCategory(){
@@ -451,6 +480,12 @@ async function addCategory(){
   let categoryName = document.getElementById("categoryName").value;
   let categoryDescription = document.getElementById("categoryDescription").value;
   let categoryBudget = document.getElementById("categoryBudget").value;
+  let err = document.getElementById("err");
+
+  if(!categoryName || categoryName.length === 0 ){
+    err.innerHTML ="Missing category name.";
+    return;
+  }
 
   const categoryData = {
     Name: categoryName,
@@ -465,7 +500,12 @@ async function addCategory(){
   document.getElementById("categoryDescription").value = "";
   document.getElementById("categoryBudget").value = "";
 
-  const res = await db.collection('Categories').doc().set(categoryData);
+  const res = await db.collection('Categories').doc().set(categoryData).catch(err => {
+    alert(err);
+    return;
+  });
+  alert("Category added successfully");
+  window.location.replace("/manage-categories.html");
 }
 
 function editCategory(categoryId){
@@ -483,6 +523,13 @@ async function updateCategory(){
   let categoryName = document.getElementById("editCategoryName").value;
   let categoryDescription = document.getElementById("editCategoryDescription").value;
 
+  let err = document.getElementById("err");
+
+  if(!categoryName || categoryName.length === 0 ){
+    err.innerHTML ="Missing category name.";
+    return;
+  }
+
   const categoryData = {
     Name: categoryName,
     Color: categoryColor,
@@ -494,7 +541,12 @@ async function updateCategory(){
   document.getElementById("editCategoryName").value = "";
   document.getElementById("editCategoryDescription").value = "";
 
-  const res = await db.collection('Categories').doc(categoryID).set(categoryData);
+  const res = await db.collection('Categories').doc(categoryID).set(categoryData).catch(err => {
+    alert(err);
+    return;
+  });
+  alert("Category updated successfully");
+  window.location.replace("/manage-categories.html");
 }
 
 async function deleteCategory(){
@@ -592,31 +644,35 @@ function editBudget(button, categoryId){
 }
 
 async function saveBudget(input){
-  let newBudgetValue = input.value;
-  let selectedBudgetId = input.id.substring(10);
-  input.disabled = true;
-  let budgetsRef = db.collection('Budgets');
-  let budgets = await budgetsRef.where('UserID', '==', signedInUser.email).get();
-  let budgetID = null;
+  //let newBudgetValue = input.value;
+  let newBudgetValue = parseFloat(input.value);
+  
+  if(!isNaN(newBudgetValue)){
+    let selectedBudgetId = input.id.substring(10);
+    input.disabled = true;
+    let budgetsRef = db.collection('Budgets');
+    let budgets = await budgetsRef.where('UserID', '==', signedInUser.email).get();
+    let budgetID = null;
 
-  budgets.forEach(budget => {
-    if(budget.data().CategoryID === selectedBudgetId)
-      budgetID = budget.id;
-  });
+    budgets.forEach(budget => {
+      if(budget.data().CategoryID === selectedBudgetId)
+        budgetID = budget.id;
+    });
 
-  if(budgetID == null){
-    const budgetData = {
-      Budget: newBudgetValue,
-      CategoryID: selectedBudgetId,
-      UserID: signedInUser.email,
-    };
-    const addBudget = await db.collection('Budgets').doc().set(budgetData);
-  }
+    if(budgetID == null){
+      const budgetData = {
+        Budget: newBudgetValue,
+        CategoryID: selectedBudgetId,
+        UserID: signedInUser.email,
+      };
+      const addBudget = await db.collection('Budgets').doc().set(budgetData);
+    }
 
-  else{
-    const correctBudgetRef = db.collection('Budgets').doc(budgetID);
-    // Set the 'capital' field of the city
-    const updateBudget = await correctBudgetRef.update({Budget: newBudgetValue});
+    else{
+      const correctBudgetRef = db.collection('Budgets').doc(budgetID);
+      // Set the 'capital' field of the city
+      const updateBudget = await correctBudgetRef.update({Budget: newBudgetValue});
+    }
   }
 
   location.reload();
