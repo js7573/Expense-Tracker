@@ -57,78 +57,84 @@ async function addUser(){
       Password: password
     };
 
-  let usersRef = db.collection("Users");
+    let usersRef = db.collection("Users");
+    let categoriesRef = db.collection("Categories");
 
     // Add user to firebase authentication to allow login
-    auth.createUserWithEmailAndPassword(email, password).then(credentials => {
-      alert("User created:\n" + credentials.user.email);
-    }).catch(error => {
-      let er = document.getElementById("err");
-      if(error.code === "auth/email-already-in-use" || error.code === "auth/invalid-email"){
-        er.innerHTML = "Invalid email."
-      }
-      else if (error.code === "auth/weak-password"){
-        er.innerHTML = "Weak password."
-      }
-      else{
-        er.innerHTML = "Oops something went wrong. Please try again later."
-      }
+    auth.createUserWithEmailAndPassword(email, password).then(async function(credentials){
+      let res = await usersRef.doc(credentials.user.email).set({
+          FirstName: document.getElementById("exampleFirstName").value,
+          LastName: document.getElementById("exampleLastName").value,
+          Email: credentials.user.email,
+          Password: document.getElementById("exampleInputPassword").value
+        })
+        .catch(err => {
+          alert(err);
+          return;
+        });
+
+        res = await categoriesRef.doc().set({
+            Name: "Rent",
+            Color: "#396dbf",
+            Budget: null,
+            Description: "",
+            UserID: credentials.user.email,
+        })
+        .catch(err => {
+          alert(err);
+          return;
+        });
+
+        res = await categoriesRef.doc().set({
+          Name: "Traffic",
+          Color: "#a039bf",
+          Budget: null,
+          Description: "",
+          UserID: credentials.user.email,
+      })
+      .catch(err => {
+        alert(err);
+        return;
+      });
+
+      res = await categoriesRef.doc().set({
+        Name: "Vacation",
+        Color: "#c92626",
+        Budget: null,
+        Description: "",
+        UserID: credentials.user.email,
+    })
+    .catch(err => {
+      alert(err);
+      return;
     });
-    
-    // Add a new document in collection "users" with email as ID
-    let res = await db.collection('Users').doc(email).set(userData);
 
-    categoryData = {
-      Name: "Rent",
-      Color: "#ff0000",
-      Budget: null,
-      Description: "",
-      UserID: email,
-    };
+      res = await categoriesRef.doc().set({
+        Name: "Shopping",
+        Color: "#62ab27",
+        Budget: null,
+        Description: "",
+        UserID: credentials.user.email,
+    })
+    .catch(err => {
+      alert(err);
+      return;
+    });
 
-    res = await db.collection('Categories').doc().set(categoryData);
+    res = await categoriesRef.doc().set({
+        Name: "Subscriptions",
+        Color: "#c9c42a",
+        Budget: null,
+        Description: "",
+        UserID: credentials.user.email,
+    })
+    .catch(err => {
+      alert(err);
+      return;
+    });
 
-    categoryData = {
-      Name: "Shopping",
-      Color: "#ffff00",
-      Budget: null,
-      Description: "",
-      UserID: email,
-    };
-
-    res = await db.collection('Categories').doc().set(categoryData);
-
-    categoryData = {
-      Name: "Subscriptions",
-      Color: "#00ff00",
-      Budget: null,
-      Description: "",
-      UserID: email,
-    };
-
-    res = await db.collection('Categories').doc().set(categoryData);
-
-    categoryData = {
-      Name: "Traffic",
-      Color: "#0000ff",
-      Budget: null,
-      Description: "",
-      UserID: email,
-    };
-
-    res = await db.collection('Categories').doc().set(categoryData);
-
-    categoryData = {
-      Name: "Vacation",
-      Color: "#ff00ee",
-      Budget: null,
-      Description: "",
-      UserID: email,
-    };
-
-    res = await db.collection('Categories').doc().set(categoryData);
-
-    window.location.replace("/index.html");
+    });
+    alert("User successfully created");
   }
   else{
     document.getElementById("err").innerHTML = "Repeat password and password do not match."
@@ -169,41 +175,47 @@ async function checkIfSignedIn(){
   if(signedInUser){
     let email = signedInUser.email;
     let user = db.collection('Users').doc(email);
+    if(user){
+      user.get().then(doc => {
+        const data = doc.data();
+        if(data){
+          let firstName = data.FirstName;
+          let lastName = data.LastName;
+          let email = data.Email;
+          let balance = data.Balance;
 
-    user.get().then(doc => {
-      const data = doc.data();
-      let firstName = data.FirstName;
-      let lastName = data.LastName;
-      let email = data.Email;
-      let balance = data.Balance;
-      document.getElementsByClassName("mr-2 d-none d-lg-inline text-gray-600 small")[0].textContent = firstName + " " + lastName;
-
-      let currentSite = window.location.href.split("/");
-      currentSite = currentSite[currentSite.length - 1];
-      args = currentSite.split("?")[1];
-      currentSite = currentSite.split("?")[0];
-      switch(currentSite){
-        case "dashboard.html":
-          dashboardCode(balance);
-          break;
-        case "add-expense.html":
-          addExpenseCode();
-          break;
-        case "expenses-overview.html":
-          expensesOverviewCode();
-          break;
-        case "manage-categories.html":
-          manageCategoriesCode();
-          break;
-        case "edit-category.html":
-          editCategoryCode(args);
-          break;
-        case "analysis.html":
-          generateBarChart();
-          generatePieChart();
-          break;
-      }
-    }); 
+          let displayName = document.getElementsByClassName("mr-2 d-none d-lg-inline text-gray-600 small")[0];
+          if(displayName)
+            displayName.textContent = firstName + " " + lastName;
+    
+          let currentSite = window.location.href.split("/");
+          currentSite = currentSite[currentSite.length - 1];
+          args = currentSite.split("?")[1];
+          currentSite = currentSite.split("?")[0];
+          switch(currentSite){
+            case "dashboard.html":
+              dashboardCode(balance);
+              break;
+            case "add-expense.html":
+              addExpenseCode();
+              break;
+            case "expenses-overview.html":
+              expensesOverviewCode();
+              break;
+            case "manage-categories.html":
+              manageCategoriesCode();
+              break;
+            case "edit-category.html":
+              editCategoryCode(args);
+              break;
+            case "analysis.html":
+              generateBarChart();
+              generatePieChart();
+              break;
+          }
+        }
+      }); 
+    }
   }
   else{
     let currentFile = window.location.href.split("/").slice(-1)[0];
@@ -234,7 +246,9 @@ async function dashboardCode(){
       let table = $('#dataTableDashboard').DataTable({searching: false, paging: false, info: false, order: [[ 2, "desc" ]]});
       let totalSpentByCategories = {};
 
-      expenses.forEach(expense => {
+
+      let j = 0;
+      allExpenses.forEach(expense => {
         expenseData = expense.data();
         let categoryName = "";
         let categoryColor = "";
@@ -254,13 +268,16 @@ async function dashboardCode(){
 
         let dateValues = expenseData.Date.split("-");
 
-        table.row.add([
-          expenseData.Name,
-          expenseData.Amount + " €",
-          dateValues[2] + "." + dateValues[1] + "." + dateValues[0],
-          categoryName,
-          expenseData.Description
-        ]).draw().node();
+        if(j < 5){
+          table.row.add([
+            expenseData.Name,
+            expenseData.Amount + " €",
+            dateValues[2] + "." + dateValues[1] + "." + dateValues[0],
+            categoryName,
+            expenseData.Description
+          ]).draw().node();
+        }
+        j++;
       });
 
       let i = 0;
@@ -347,9 +364,8 @@ async function dashboardCode(){
         '</div>';
         document.getElementById("dashboardBudgets").innerHTML += budgetCard;
         }
-
-        generateBarChartDashboard(totalSpentByCategories);
       });
+      generateBarChartDashboard(totalSpentByCategories);
   });
 }
 
@@ -366,7 +382,7 @@ async function expensesOverviewCode(){
 
   let tableColors = [];
   $(document).ready(function() {
-      let table = $('#dataTableOverview').DataTable({order: [[ 2, "desc" ]]});
+      let table = $('#dataTableOverview').DataTable({"lengthMenu": [[3, 5, 10, 25, 50, -1], [3, 5, 10, 25, 50, "All"]], order: [[ 2, "desc" ]]});
       
       expenses.forEach(expense => {
         expenseData = expense.data();
@@ -460,12 +476,14 @@ async function addExpense(){
   document.getElementById("expenseDescription").value = "";
 
   const categoriesRef = db.collection('Categories');
-  const customCategories = await categoriesRef.where('Name', '==', expenseCategory).get();
+  const categories = await categoriesRef.where('UserID', '==', signedInUser.email).get();
 
   categoryId = null;
-  customCategories.forEach(category => {
+
+  categories.forEach(category => {
     categoryId = category.id;
-    expenseData.CategoryID = categoryId;
+    if(category.data().Name === expenseCategory)
+      expenseData.CategoryID = category.id;
   });
 
   const res = await db.collection('Expenses').doc().set(expenseData).catch(err => {
@@ -494,16 +512,30 @@ async function addCategory(){
     Description: categoryDescription,
     UserID: signedInUser.email,
   };
-
+  
   document.getElementById("categoryColor").value = "";
   document.getElementById("categoryName").value = "";
   document.getElementById("categoryDescription").value = "";
   document.getElementById("categoryBudget").value = "";
 
-  const res = await db.collection('Categories').doc().set(categoryData).catch(err => {
+  const res = await db.collection('Categories').add(categoryData)
+    .then(async function(docRef){
+      if(categoryBudget != NaN){
+        const budgetData = {
+          Budget: categoryBudget,
+          CategoryID: docRef.id,
+          UserID: signedInUser.email,
+        };
+        await db.collection('Budgets').add(budgetData).catch(err => {
+          alert(err);
+          return;
+        });
+      }
+    }).catch(err => {
     alert(err);
     return;
   });
+
   alert("Category added successfully");
   window.location.replace("/manage-categories.html");
 }
@@ -604,7 +636,7 @@ async function showCategories(){
     let budgetForCategory = "Not set";
 
     budgets.forEach(budget => {
-      if(budget.data().CategoryID === categoryId && budget.data().Budget !== "")
+      if(budget.data().CategoryID === categoryId && budget.data().Budget !== null)
         budgetForCategory = budget.data().Budget + "€";
     });
 
@@ -644,8 +676,13 @@ function editBudget(button, categoryId){
 }
 
 async function saveBudget(input){
-  //let newBudgetValue = input.value;
-  let newBudgetValue = parseFloat(input.value);
+  let newBudgetValue;
+
+  if(input.value === "")
+    newBudgetValue = null;
+    
+  else
+    newBudgetValue = parseFloat(input.value);
   
   if(!isNaN(newBudgetValue)){
     let selectedBudgetId = input.id.substring(10);
@@ -659,19 +696,24 @@ async function saveBudget(input){
         budgetID = budget.id;
     });
 
-    if(budgetID == null){
-      const budgetData = {
-        Budget: newBudgetValue,
-        CategoryID: selectedBudgetId,
-        UserID: signedInUser.email,
-      };
-      const addBudget = await db.collection('Budgets').doc().set(budgetData);
-    }
+    if(newBudgetValue == null && budgetID != null)
+      await db.collection('Budgets').doc(budgetID).delete();
 
     else{
-      const correctBudgetRef = db.collection('Budgets').doc(budgetID);
-      // Set the 'capital' field of the city
-      const updateBudget = await correctBudgetRef.update({Budget: newBudgetValue});
+      if(budgetID == null){
+        const budgetData = {
+          Budget: newBudgetValue,
+          CategoryID: selectedBudgetId,
+          UserID: signedInUser.email,
+        };
+        const addBudget = await db.collection('Budgets').doc().set(budgetData);
+      }
+  
+      else{
+        const correctBudgetRef = db.collection('Budgets').doc(budgetID);
+        // Set the 'capital' field of the city
+        const updateBudget = await correctBudgetRef.update({Budget: newBudgetValue});
+      }
     }
   }
 
