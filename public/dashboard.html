@@ -201,9 +201,17 @@
                             <a href="add-expense.html" class="btn btn-primary btn-icon-split">
                                 <span class="text">Add expense</span>
                             </a>
+
+                            <a href="expenses-overview.html" class="btn btn-primary btn-icon-split">
+                                <span class="text">Expenses overview</span>
+                            </a>
     
                             <a href="manage-categories.html" class="btn btn-primary btn-icon-split">
                                 <span class="text">Categories & budgets</span>
+                            </a>
+
+                            <a href="analysis.html" class="btn btn-primary btn-icon-split">
+                                <span class="text">Analysis</span>
                             </a>
 
                         </div>
@@ -239,11 +247,11 @@
                     <!-- Content Row -->
 
                     <div class="row">
-                        <div class="col-xl-8 col-lg-9">
+                        <div class="col-xl-8 col-lg-9" style="margin:0 auto;">
                         <!-- Bar Chart -->
                         <div class="card shadow mb-4">
                             <div class="card-header py-3">
-                                <h6 class="m-0 font-weight-bold text-primary">Expenses this month</h6>
+                                <h6 class="m-0 font-weight-bold text-primary">Expenses in current month</h6>
                             </div>
                             <div class="card-body">
                                 <div class="chart-bar">
@@ -317,6 +325,7 @@
     <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
 
     <!-- Page level custom scripts -->
+    <script src="js/demo/graphs.js"></script>
 </body>
 
 </html>
