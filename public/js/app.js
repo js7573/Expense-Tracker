@@ -241,7 +241,7 @@ async function dashboardCode(){
   const expensesRef = db.collection('Expenses');
 
   let expenses = await expensesRef.where('UserID', '==', signedInUser.email).orderBy('Date', 'desc').limit(5).get();
-  let allExpenses = await expensesRef.where('UserID', '==', signedInUser.email).get();
+  let allExpenses = await expensesRef.where('UserID', '==', signedInUser.email).orderBy('Date', 'desc').get();
 
   let budgetsRef = db.collection('Budgets');
   let budgets = await budgetsRef.where('UserID', '==', signedInUser.email).get();
@@ -250,6 +250,8 @@ async function dashboardCode(){
   let categories = await categoriesRef.where('UserID', '==', signedInUser.email).get();
 
   let month = new Date().getMonth() + 1 + "";
+  let year = new Date().getFullYear();
+
   let expensesThisMonth = 0;
 
   let tableColors = [];
@@ -264,6 +266,7 @@ async function dashboardCode(){
         let categoryName = "";
         let categoryColor = "";
         let expenseMonth = expenseData.Date.split("-")[1];
+        let expenseYear = expenseData.Date.split("-")[0];
 
         categories.forEach(category => {
           if(expenseData.CategoryID === category.id){
@@ -274,7 +277,7 @@ async function dashboardCode(){
             if(!totalSpentByCategories[category.id])
               totalSpentByCategories[category.id] = 0;
 
-            if(expenseMonth === month)
+            if(parseInt(expenseMonth) === parseInt(month) && parseInt(expenseYear) === parseInt(year))
               totalSpentByCategories[category.id] += parseFloat(expenseData.Amount);
           }
         });
@@ -282,29 +285,24 @@ async function dashboardCode(){
         let dateValues = expenseData.Date.split("-");
 
         if(j < 5){
-          table.row.add([
+          let node = table.row.add([
             expenseData.Name,
             expenseData.Amount + " €",
             dateValues[2] + "." + dateValues[1] + "." + dateValues[0],
             categoryName,
             expenseData.Description
           ]).draw().node();
+          node.childNodes[0].style.borderLeft = "5px solid " + categoryColor;
         }
         j++;
       });
-
-      let i = 0;
-      table.rows().every(function(rowIdx, tableLoop, rowLoop){
-        var node = this.node();
-        node.childNodes[0].style.borderLeft = "5px solid " + tableColors[i];
-        i++;
-      })
 
       // Show money spent this month
       allExpenses.forEach(expense => {
         expenseData = expense.data();
         expenseMonth = expenseData.Date.split("-")[1];
-        if(expenseMonth === month)
+        expenseYear = expenseData.Date.split("-")[0];
+        if(parseInt(expenseMonth) === parseInt(month) && parseInt(expenseYear) === parseInt(year))
           expensesThisMonth += parseFloat(expenseData.Amount);
       });
       const date = new Date(); 
@@ -338,7 +336,8 @@ async function dashboardCode(){
         allExpenses.forEach(expense => {
           expenseData = expense.data();
           expenseMonth = expenseData.Date.split("-")[1]; 
-          if(expenseData.CategoryID === budgetData.CategoryID && budgetData.Budget !== "" && expenseMonth === month){
+          expenseYear = expenseData.Date.split("-")[0];
+          if(expenseData.CategoryID === budgetData.CategoryID && budgetData.Budget !== "" && parseInt(expenseMonth) === parseInt(month) && parseInt(expenseYear) === parseInt(year)){
               budgetSpent += parseFloat(expenseData.Amount);
           }
         });
@@ -413,21 +412,15 @@ async function expensesOverviewCode(){
 
         let dateValues = expenseData.Date.split("-");
 
-        table.row.add([
+        let node = table.row.add([
           expenseData.Name,
           expenseData.Amount + "€",
           dateValues[2] + "." + dateValues[1] + "." + dateValues[0],
           categoryName,
           expenseData.Description
-        ]).draw(false);
+        ]).draw().node();
+        node.childNodes[0].style.borderLeft = "5px solid " + categoryColor;
       });
-
-      let i = 0;
-      table.rows().every(function(rowIdx, tableLoop, rowLoop){
-        var node = this.node();
-        node.childNodes[0].style.borderLeft = "5px solid " + tableColors[i];
-        i++;
-      })
       
       //document.getElementById("dataTableOverview_length").innerHTML = '<label>Show <input type="number" name="dataTableOverview_length" aria-controls="dataTableOverview" class="custom-select custom-select-sm form-control form-control-sm"></input> entries</label>'
     
@@ -754,7 +747,7 @@ async function analysisCode(){
     let expenseMonth = expense.data().Date.split("-")[1];
     let expenseYear = expense.data().Date.split("-")[0];
 
-    if(!options.includes(parseInt(expenseMonth) + " " + expenseYear))
+    if(!options.includes(expenseMonth + " " + expenseYear))
       options.push(expenseMonth + " " + expenseYear);
   });
 
@@ -774,11 +767,18 @@ async function analysisCode(){
   el = document.createElement("option");
   el.textContent = "Total";
   el.value = "";
+  el.selected = true;
   select.appendChild(el);
 
   for (const option of select) {
+    if(currmonth < 10)
+      currmonth = "0" + currmonth;
+
     if(option.value === currmonth + "," + curryear)
       option.selected = true;
+
+    if(currmonth.length == 2)
+      currmonth = new Date().getMonth() + 1 + "";
   }
 
   chosenMonth = select.value;

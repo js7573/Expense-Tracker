@@ -500,6 +500,7 @@ let categoriesRef = db.collection('Categories');
 let categories = await categoriesRef.where('UserID', '==', signedInUser.email).get();
 
 let totalSpentByCategories = {};
+let sum = 0;
 
 expenses.forEach(expense => {
     expenseData = expense.data();
@@ -512,14 +513,19 @@ expenses.forEach(expense => {
         if(!totalSpentByCategories[category.id])
         totalSpentByCategories[category.id] = 0;
 
-        if(chosenMonth === "")
-        totalSpentByCategories[category.id] += parseFloat(expenseData.Amount);
+        if(chosenMonth === ""){
+            totalSpentByCategories[category.id] += parseFloat(expenseData.Amount);
+            sum += expenseData.Amount;
+        }
+        
 
         else{
-        let expenseMonth = expenseData.Date.split("-")[1];
-        let expenseYear = expenseData.Date.split("-")[0];
-        if(expenseMonth === chosenMonth && expenseYear === chosenYear)
-            totalSpentByCategories[category.id] += parseFloat(expenseData.Amount);
+            let expenseMonth = expenseData.Date.split("-")[1];
+            let expenseYear = expenseData.Date.split("-")[0];
+            if(expenseMonth === chosenMonth && expenseYear === chosenYear){
+                totalSpentByCategories[category.id] += parseFloat(expenseData.Amount);
+                sum += expenseData.Amount;
+            }
         }
     }
     });
@@ -528,6 +534,7 @@ expenses.forEach(expense => {
 let labels = [];
 let colors = [];
 let totalSpent = [];
+
 
 categories.forEach(category => {
     labels.push(category.data().Name);
