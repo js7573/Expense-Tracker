@@ -45,6 +45,14 @@ categories.forEach(category => {
     maxAmount = totalSpentByCategories[category.id];
 });
 
+if(totalSpentByCategories["No_category"]){
+    labels.push("No category");
+    colors.push("#858796");
+    totalSpent.push(totalSpentByCategories["No_category"]);
+    if(totalSpentByCategories["No_category"] > maxAmount)
+        maxAmount = totalSpentByCategories["No_category"];
+}
+
 // Bar Chart Example
 var ctx = document.getElementById("myBarChart");
 var myBarChart = new Chart(ctx, {
@@ -182,12 +190,13 @@ expenses.forEach(expense => {
     categories.forEach(category => {
     if(expenseData.CategoryID === category.id){
 
+        categoryName = category.data().Name;
+
         if(!totalSpentByCategories[category.id])
         totalSpentByCategories[category.id] = 0;
 
         if(chosenMonth === "")
-        totalSpentByCategories[category.id] += parseFloat(expenseData.Amount);
-
+            totalSpentByCategories[category.id] += parseFloat(expenseData.Amount);
         else{
         let expenseMonth = expenseData.Date.split("-")[1];
         let expenseYear = expenseData.Date.split("-")[0];
@@ -196,6 +205,25 @@ expenses.forEach(expense => {
         }
     }
     });
+
+    if(categoryName === ""){
+        categoryName = "No category";
+        categoryColor = "#858796";
+
+        if(!totalSpentByCategories["No_category"])
+          totalSpentByCategories["No_category"] = 0;
+
+        if(chosenMonth === "")
+            totalSpentByCategories[category.id] += parseFloat(expenseData.Amount);
+
+        else{
+            let expenseMonth = expenseData.Date.split("-")[1];
+            let expenseYear = expenseData.Date.split("-")[0];
+            if(expenseMonth === chosenMonth && expenseYear === chosenYear)
+                totalSpentByCategories["No_category"] += parseFloat(expenseData.Amount);
+        }
+    }
+
 });
 
 let labels = [];
@@ -211,6 +239,14 @@ categories.forEach(category => {
     if(totalSpentByCategories[category.id] > maxAmount)
     maxAmount = totalSpentByCategories[category.id];
 });
+
+if(totalSpentByCategories["No_category"]){
+    labels.push("No category");
+    colors.push("#858796");
+    totalSpent.push(totalSpentByCategories["No_category"]);
+    if(totalSpentByCategories["No_category"] > maxAmount)
+        maxAmount = totalSpentByCategories["No_category"];
+}
 
 // Bar Chart Example
 var ctx = document.getElementById("myBarChart");
@@ -370,9 +406,6 @@ budgets.forEach(budget => {
     }
     });
 
-    labels.push(categoryName);
-    colors.push(categoryColor);
-
     expenses.forEach(expense => {
     expenseData = expense.data();
     expenseMonth = expenseData.Date.split("-")[1]; 
@@ -392,6 +425,8 @@ budgets.forEach(budget => {
     percentage = percentage.toFixed(2);
     totalSpentByBudgets[categoryName] = percentage;
     totalSpent.push(totalSpentByBudgets[categoryName]);
+    labels.push(categoryName);
+    colors.push(categoryColor);
     }
 });
 // Bar Chart Example
@@ -510,6 +545,8 @@ expenses.forEach(expense => {
     categories.forEach(category => {
     if(expenseData.CategoryID === category.id){
 
+        categoryName = category.data().Name;
+
         if(!totalSpentByCategories[category.id])
         totalSpentByCategories[category.id] = 0;
 
@@ -528,6 +565,24 @@ expenses.forEach(expense => {
             }
         }
     }
+
+    if(categoryName === ""){
+        categoryName = "No category";
+        categoryColor = "#858796";
+
+        if(!totalSpentByCategories["No_category"])
+          totalSpentByCategories["No_category"] = 0;
+
+        if(chosenMonth === "")
+            totalSpentByCategories[category.id] += parseFloat(expenseData.Amount);
+
+        else{
+            let expenseMonth = expenseData.Date.split("-")[1];
+            let expenseYear = expenseData.Date.split("-")[0];
+            if(expenseMonth === chosenMonth && expenseYear === chosenYear)
+                totalSpentByCategories["No_category"] += parseFloat(expenseData.Amount);
+        }
+    }
     });
 });
 
@@ -541,6 +596,12 @@ categories.forEach(category => {
     colors.push(category.data().Color);
     totalSpent.push(totalSpentByCategories[category.id]);
 });
+
+if(totalSpentByCategories["No_category"]){
+    labels.push("No category");
+    colors.push("#858796");
+    totalSpent.push(totalSpentByCategories["No_category"]);
+}
 
 var myPieChart = new Chart(ctx, {
     type: 'doughnut',

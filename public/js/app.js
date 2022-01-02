@@ -282,6 +282,18 @@ async function dashboardCode(){
           }
         });
 
+        if(categoryName === ""){
+          categoryName = "No category";
+          categoryColor = "#858796";
+          tableColors.push(categoryColor);
+
+          if(!totalSpentByCategories["No_category"])
+            totalSpentByCategories["No_category"] = 0;
+
+          if(parseInt(expenseMonth) === parseInt(month) && parseInt(expenseYear) === parseInt(year))
+            totalSpentByCategories["No_category"] += parseFloat(expenseData.Amount);
+        }
+
         let dateValues = expenseData.Date.split("-");
 
         if(j < 5){
@@ -402,6 +414,8 @@ async function expensesOverviewCode(){
         expenseData = expense.data();
 
         let categoryName = "";
+        let categoryColor = "";
+
         categories.forEach(category => {
           if(expenseData.CategoryID === category.id){
             categoryName = category.data().Name;
@@ -597,7 +611,16 @@ async function deleteCategory(){
   currentSite = currentSite.split("?")[0];
   categoryID = args.split("=")[1];
 
-  const res = await db.collection('Categories').doc(categoryID).delete();
+  const budgetsRef = db.collection('Budgets');
+  const budgets = await budgetsRef.where('CategoryID', '==', categoryID).get();
+  let correctBudget;
+
+  budgets.forEach(budget => {
+    correctBudget = budget.id;
+  });
+  
+  res = await db.collection('Categories').doc(categoryID).delete();
+  res = await db.collection('Budgets').doc(correctBudget).delete();
 
   document.getElementById("editCategoryColor").value = "";
   document.getElementById("editCategoryName").value = "";
