@@ -214,7 +214,7 @@ expenses.forEach(expense => {
           totalSpentByCategories["No_category"] = 0;
 
         if(chosenMonth === "")
-            totalSpentByCategories[category.id] += parseFloat(expenseData.Amount);
+            totalSpentByCategories["No_category"] += parseFloat(expenseData.Amount);
 
         else{
             let expenseMonth = expenseData.Date.split("-")[1];
@@ -574,7 +574,7 @@ expenses.forEach(expense => {
           totalSpentByCategories["No_category"] = 0;
 
         if(chosenMonth === "")
-            totalSpentByCategories[category.id] += parseFloat(expenseData.Amount);
+        totalSpentByCategories["No_category"] += parseFloat(expenseData.Amount);
 
         else{
             let expenseMonth = expenseData.Date.split("-")[1];
