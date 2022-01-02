@@ -221,6 +221,9 @@ async function checkIfSignedIn(){
             case "edit-category.html":
               editCategoryCode(args);
               break;
+            case "edit-expense.html":
+              editExpenseCode(args);
+              break;
             case "analysis.html":
               analysisCode();
               break;
@@ -408,7 +411,11 @@ async function expensesOverviewCode(){
 
   let tableColors = [];
   $(document).ready(function() {
-      let table = $('#dataTableOverview').DataTable({"lengthMenu": [[3, 5, 10, 25, 50, -1], [3, 5, 10, 25, 50, "All"]], order: [[ 2, "desc" ]]});
+      let table = $('#dataTableOverview').DataTable({
+        "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]], 
+        order: [[ 2, "desc" ]],
+        "columnDefs": [{ "targets": -1, "data": null, "defaultContent": "<input id='btnEdit' id='expenseEdit' class='btn btn-primary' style='width:70px; margin:0 auto;' value='Edit' />"}]
+      });
       
       expenses.forEach(expense => {
         expenseData = expense.data();
@@ -431,15 +438,142 @@ async function expensesOverviewCode(){
           expenseData.Amount + "€",
           dateValues[2] + "." + dateValues[1] + "." + dateValues[0],
           categoryName,
-          expenseData.Description
+          expenseData.Description,
+          "",
+          expense.id
         ]).draw().node();
         node.childNodes[0].style.borderLeft = "5px solid " + categoryColor;
+
+        $('#dataTableOverview').on('click', '[id*=btnEdit]', function () {
+          var data = table.row($(this).parents('tr')).data();
+          var expenseID = data[6];
+          window.location.replace("/edit-expense.html?expenseId=" + expenseID);
+        });
       });
       
       //document.getElementById("dataTableOverview_length").innerHTML = '<label>Show <input type="number" name="dataTableOverview_length" aria-controls="dataTableOverview" class="custom-select custom-select-sm form-control form-control-sm"></input> entries</label>'
     
   });
  
+}
+
+async function editExpenseCode(expenseID){
+  expenseID = expenseID.split("=")[1];
+
+  let expense = await db.collection('Expenses').doc(expenseID).get();
+  let category = await db.collection('Categories').doc(expense.data().CategoryID).get();
+
+  let select = document.getElementById("editExpenseCategories");
+  let options = [];
+
+  const categoriesRef = db.collection('Categories');
+
+  const categories = await categoriesRef.where('UserID', '==', signedInUser.email).get();
+
+  categories.forEach(category => {
+    options.push(category.data().Name);
+  });
+
+  for(var i = 0; i < options.length; i++) {
+    var opt = options[i];
+    var el = document.createElement("option");
+    el.textContent = opt;
+    el.value = opt;
+    if(category.data().Name === opt)
+      el.selected = true;
+    select.appendChild(el);
+  }
+
+  document.getElementById("editExpenseName").value = expense.data().Name;
+  document.getElementById("editExpenseAmount").value = expense.data().Amount;
+  document.getElementById("editExpenseDate").value = expense.data().Date;
+  document.getElementById("editExpenseDescription").value = expense.data().Description;
+}
+
+async function updateExpense(){
+  let currentSite = window.location.href.split("/");
+  currentSite = currentSite[currentSite.length - 1];
+  args = currentSite.split("?")[1];
+  currentSite = currentSite.split("?")[0];
+  expenseID = args.split("=")[1];
+
+  let expenseName = document.getElementById("editExpenseName").value;
+  let expenseAmount = document.getElementById("editExpenseAmount").value;
+  let expenseDate = document.getElementById("editExpenseDate").value;
+  let expenseCategory = document.getElementById("editExpenseCategories").value;
+  let expenseDescription = document.getElementById("editExpenseDescription").value;
+  let err = document.getElementById("err");
+
+  //check input
+  if(!expenseName || expenseName.length === 0 ){
+    err.innerHTML ="Missing expense name.";
+    return;
+  }
+  if(isNaN(parseFloat(expenseAmount))){
+    err.innerHTML ="Missing expense amount.";
+    return;
+  }
+  if(!(new Date(expenseDate) !== "Invalid Date" && !isNaN(new Date(expenseDate)))){ 
+    err.innerHTML ="Missing expense date.";
+    return;
+  }
+  if(expenseCategory.length === 0){
+    err.innerHTML ="Missing expense category.";
+    return;
+  }
+
+
+  const expenseData = {
+    Name: expenseName,
+    Amount: expenseAmount,
+    Date: expenseDate,
+    CategoryID: expenseCategory,
+    Description: expenseDescription,
+    UserID: signedInUser.email,
+  };
+
+  document.getElementById("editExpenseName").value = "";
+  document.getElementById("editExpenseAmount").value = "";
+  document.getElementById("editExpenseDate").value = "";
+  document.getElementById("editExpenseCategories").value = "";
+  document.getElementById("editExpenseDescription").value = "";
+
+  const categoriesRef = db.collection('Categories');
+  const categories = await categoriesRef.where('UserID', '==', signedInUser.email).get();
+
+  categoryId = null;
+
+  categories.forEach(category => {
+    categoryId = category.id;
+    if(category.data().Name === expenseCategory)
+      expenseData.CategoryID = category.id;
+  });
+
+  const res = await db.collection('Expenses').doc(expenseID).set(expenseData).catch(err => {
+    alert(err);
+    return;
+  });
+  
+  alert("Expense updated successfully");
+  window.location.replace("/expenses-overview.html");
+}
+
+async function deleteExpense(){
+  let currentSite = window.location.href.split("/");
+  currentSite = currentSite[currentSite.length - 1];
+  args = currentSite.split("?")[1];
+  currentSite = currentSite.split("?")[0];
+  expenseID = args.split("=")[1];
+
+  document.getElementById("editExpenseName").value = "";
+  document.getElementById("editExpenseAmount").value = "";
+  document.getElementById("editExpenseDate").value = "";
+  document.getElementById("editExpenseCategories").value = "";
+  document.getElementById("editExpenseDescription").value = "";
+
+  res = await db.collection('Expenses').doc(expenseID).delete();
+
+  window.location.replace("/expenses-overview.html");
 }
 
 async function manageCategoriesCode(){
