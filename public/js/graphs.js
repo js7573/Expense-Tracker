@@ -565,7 +565,7 @@ expenses.forEach(expense => {
             }
         }
     }
-
+    });
     if(categoryName === ""){
         categoryName = "No category";
         categoryColor = "#858796";
@@ -583,7 +583,6 @@ expenses.forEach(expense => {
                 totalSpentByCategories["No_category"] += parseFloat(expenseData.Amount);
         }
     }
-    });
 });
 
 let labels = [];
