@@ -2,6 +2,9 @@ let app;
 let db;
 let auth;
 let signedInUser = null;
+let analysisBarChart;
+let analysisBudgetsChart;
+let analysisPieChart;
 
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -260,7 +263,14 @@ async function dashboardCode(){
   let tableColors = [];
 
   $(document).ready(function() {
-      let table = $('#dataTableDashboard').DataTable({searching: false, paging: false, info: false, order: [[ 2, "desc" ]]});
+      let table = $('#dataTableDashboard').DataTable({searching: false, paging: false, info: false,
+        "columnDefs": [
+          {
+            "targets": [ 2 ],
+            "type": "date",
+          }
+      ], order: [[ 2, "desc" ]]
+      });
       let totalSpentByCategories = {};
 
       let j = 0;
@@ -414,8 +424,23 @@ async function expensesOverviewCode(){
       let table = $('#dataTableOverview').DataTable({
         "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]], 
         order: [[ 2, "desc" ]],
-        "columnDefs": [{ "targets": -1, "data": null, "defaultContent": "<input id='btnEdit' id='expenseEdit' class='btn btn-primary' style='width:70px; margin:0 auto;' value='Edit' />"}]
-      });
+        "columnDefs": [
+          { 
+            "targets": -1, 
+            "data": null, 
+            "defaultContent": "<input id='btnEdit' id='expenseEdit' class='btn btn-primary' style='display:flex; width:60px; margin:0 auto;' value='Edit' />"
+          },
+          {
+              "targets": [ 5 ],
+              "visible": false,
+              "searchable": false
+          },
+          {
+            "targets": [ 2 ],
+            "type": "date",
+            "orderable": true
+          }
+      ]});
       
       expenses.forEach(expense => {
         expenseData = expense.data();

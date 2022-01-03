@@ -250,7 +250,10 @@ if(totalSpentByCategories["No_category"]){
 
 // Bar Chart Example
 var ctx = document.getElementById("myBarChart");
-var myBarChart = new Chart(ctx, {
+if(analysisBarChart != undefined){
+    analysisBarChart.destroy();
+}
+analysisBarChart = new Chart(ctx, {
     type: 'bar',
     data: {
     labels: labels,
@@ -431,7 +434,10 @@ budgets.forEach(budget => {
 });
 // Bar Chart Example
 var ctx = document.getElementById("budgetSpent");
-var myBarChart = new Chart(ctx, {
+if(analysisBudgetsChart != undefined){
+    analysisBudgetsChart.destroy();
+}
+analysisBudgetsChart = new Chart(ctx, {
     type: 'bar',
     data: {
     labels: labels,
@@ -528,6 +534,10 @@ Chart.defaults.global.defaultFontColor = '#858796';
 // Pie Chart Example
 var ctx = document.getElementById("myPieChart");
 
+if(analysisPieChart != undefined){
+    analysisPieChart.destroy();
+}
+
 let expensesRef = db.collection('Expenses');
 let expenses = await expensesRef.where('UserID', '==', signedInUser.email).get();
 
@@ -602,7 +612,7 @@ if(totalSpentByCategories["No_category"]){
     totalSpent.push(totalSpentByCategories["No_category"]);
 }
 
-var myPieChart = new Chart(ctx, {
+analysisPieChart = new Chart(ctx, {
     type: 'doughnut',
     data: {
     labels: labels,
