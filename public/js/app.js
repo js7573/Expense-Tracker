@@ -504,7 +504,7 @@ async function editExpenseCode(expenseID){
     var el = document.createElement("option");
     el.textContent = opt;
     el.value = opt;
-    if(category.data().Name === opt)
+    if(category.data() && category.data().Name === opt)
       el.selected = true;
     select.appendChild(el);
   }
